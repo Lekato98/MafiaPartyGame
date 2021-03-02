@@ -1,8 +1,10 @@
 import {defineTypes, Schema} from "@colyseus/schema";
+import {MafiaRolesEnum} from "../Utils/MafiaGameUtils";
 
 export class Player extends Schema {
     private readonly sessionId: string;
     private readonly username: string;
+    private role: MafiaRolesEnum;
 
     constructor(sessionId: string, username: string) {
         super();
@@ -17,11 +19,20 @@ export class Player extends Schema {
     getUsername(): string {
         return this.username;
     }
+
+    setRole(role: MafiaRolesEnum): void {
+        this.role = role;
+    }
+
+    getRole(): MafiaRolesEnum {
+        return this.role;
+    }
 }
 
 defineTypes(Player, {
     sessionId: 'string',
     username: 'string',
+    role: 'string'
 });
 
 export default Player;

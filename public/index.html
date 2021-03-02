@@ -7,22 +7,68 @@
     <title>Title</title>
 </head>
 <body>
-<script>
+    <h1>
+        current turns
+    </h1>
+    <div id='state'></div>
+
+    <div id='turns'></div>
+
+    <div id='time'></div>
+    <script>
+
   async function createClient() {
-    const endPoint = "ws://localhost:4567";
+    const endPoint = 'ws://localhost:4567';
     const client = new Colyseus.Client(endPoint);
-    const room = await client.create('Mafia', {username: 'lee', jointType: 'PLAYER'});
-
+    const room = await client.joinOrCreate('Mafia',
+        {username: 'lee', jointType: 'PLAYER'});
+    room.send('START');
+    room.onMessage('ERROR', (message) => alert(message));
     room.onStateChange.once((state) => {
+      setStateName(state);
+      setCurrentTurns(state);
+      setCurrentTime(state);
       console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
-    })
+    });
 
-    room.onStateChange.once((state) => {
-      console.log(`Updated state: ${JSON.stringify(state, null, 2)}`);
-    })
+    room.onStateChange((state) => {
+      setStateName(state);
+      setCurrentTurns(state);
+      setCurrentTime(state);
+      // console.log(`Updated state: ${JSON.stringify(state, null, 2)}`);
+    });
+
+    room.onError(err => console.error(err));
+    // setInterval(() => room.send('ACTION'), 2000);
   }
 
-  createClient();
+  function setStateName(state) {
+    const stateDiv = document.querySelector('#state');
+    stateDiv.innerHTML = state.gameHandler.currentState.stateName;
+  }
+
+  function setCurrentTurns(state) {
+    const turns = document.querySelector('#turns');
+    let template = '';
+    state.gameHandler.currentState.turn.forEach(item => template += `${item}, `);
+    turns.innerText = template;
+  }
+
+  function setCurrentTime(state) {
+    const time = document.querySelector('#time');
+    let phaseTime = state.gameHandler.currentState.phaseTime - 1;
+    time.innerText = phaseTime;
+    const timeInterval = setInterval(() => {
+      if (--phaseTime >= 0) {
+        time.innerText = phaseTime;
+      } else {
+        clearInterval(timeInterval);
+      }
+    }, 1000);
+  }
+
+
+  createClient().catch(err => alert(err));
 
 </script>
 </body>

@@ -3,7 +3,7 @@ import { Room, Client } from "colyseus.js";
 import MafiaRoom from "../src/rooms/MafiaRoom";
 
 export function requestJoinOptions (this: Client, i: number) {
-    return { requestNumber: i };
+    return { requestNumber: i, jointType: 'PLAYER', username: Math.random().toString() };
 }
 
 export function onJoin(this: Room) {
@@ -23,5 +23,5 @@ export function onError(this: Room, err: Error) {
 }
 
 export function onStateChange(this: Room, state: MafiaRoom) {
-    console.log('statechange');
+    console.log(state);
 }

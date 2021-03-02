@@ -1,8 +1,15 @@
+import {
+    InvalidNumberOfPlayersError,
+    MafiaRoomErrorsEnum
+} from "../Errors/MafiaRoomErrors";
+
 export enum MafiaRolesEnum {
-    MAFIA,
-    DETECTIVE,
-    DOCTOR,
-    INNOCENT
+    MAFIA = 'MAFIA',
+    DETECTIVE = 'DETECTIVE',
+    DOCTOR = 'DOCTOR',
+    INNOCENT = 'INNOCENT',
+    DEADS = 'DEADS',
+    MODERATOR = 'MODERATOR'
 }
 
 export enum MafiaGameEnum {
@@ -10,23 +17,33 @@ export enum MafiaGameEnum {
     MAX_NUMBER_OF_PLAYERS = 16,
 }
 
-class MafiaGameUtils {
+abstract class MafiaGameUtils {
     public static isValidNumberOfPlayers(numberOfPlayers: number) {
         return numberOfPlayers >= MafiaGameEnum.MIN_NUMBER_OF_PLAYERS
             && numberOfPlayers <= MafiaGameEnum.MAX_NUMBER_OF_PLAYERS;
     }
 
-    public static createGameRolesCollection(numberOfPlayers: number): Array<MafiaRolesEnum> {
+    public static createGameRolesCollection(numberOfPlayers: number, shuffle: boolean = false): Array<MafiaRolesEnum> {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
             const numberOfDetectives = this.getNumberOfDetectives(numberOfPlayers);
             const numberOfDoctors = this.getNumberOfDoctors(numberOfPlayers);
             const numberOfInnocents = this.getNumberOfInnocents(numberOfPlayers);
 
-            return this.getGameRolesCollection(numberOfMafia, numberOfDetectives, numberOfDoctors, numberOfInnocents);
+            const gameRolesCollection = this.getGameRolesCollection(numberOfMafia, numberOfDetectives, numberOfDoctors, numberOfInnocents);
+
+            if (shuffle) {
+                this.shuffleCollections(gameRolesCollection);
+            }
+
+            return gameRolesCollection;
         } else {
             throw new InvalidNumberOfPlayersError(MafiaRoomErrorsEnum.INVALID_NUMBER_OF_PLAYERS);
         }
+    }
+
+    public static getUniqueGameRolesCollection() {
+        return [MafiaRolesEnum.MAFIA, MafiaRolesEnum.DETECTIVE, MafiaRolesEnum.DOCTOR, MafiaRolesEnum.INNOCENT];
     }
 
     public static getGameRolesCollection(numberOfMafia: number, numberOfDetectives: number, numberOfDoctors: number, numberOfInnocents: number): Array<MafiaRolesEnum> {
@@ -82,6 +99,26 @@ class MafiaGameUtils {
         }
 
         return collection;
+    }
+
+    // Fisher-Yates (aka Knuth) Shuffle Algorithm
+    public static shuffleCollections(collection: Array<any>): void {
+        let currentIndex: number = collection.length;
+        let temporaryValue: any;
+        let randomIndex: number;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = collection[currentIndex];
+            collection[currentIndex] = collection[randomIndex];
+            collection[randomIndex] = temporaryValue;
+        }
     }
 }
 

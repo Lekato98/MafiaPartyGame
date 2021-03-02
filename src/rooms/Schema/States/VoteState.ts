@@ -1,33 +1,34 @@
 import State, {StatesEnum, StatesPhaseTime} from "./State";
-import DetectiveState from "./DetectiveState";
 import MafiaGameUtils, {MafiaRolesEnum} from "../../Utils/MafiaGameUtils";
+import NightState from "./NightState";
 import {ArraySchema} from "@colyseus/schema";
 
-class MafiaState extends State {
+class VoteState extends State {
     constructor() {
         super();
-        this.refreshMafiaState();
+        this.refreshVoteState();
     }
 
     action(): State {
-        return new DetectiveState();
+        return new NightState();
     }
 
     getNextState(): StatesEnum {
-        return StatesEnum.DETECTIVE_STATE;
+        return StatesEnum.NIGHT_STATE;
     }
 
     getState(): StatesEnum {
         return this.stateName;
     }
 
-    refreshMafiaState(): void {
-        this.stateName = StatesEnum.MAFIA_STATE;
-        this.phaseTime = StatesPhaseTime.MAFIA_PHASE_TIME;
+    refreshVoteState(): void {
+        this.stateName = StatesEnum.VOTE_STATE;
+        this.phaseTime = StatesPhaseTime.VOTE_PHASE_TIME;
         this.turn = new ArraySchema<MafiaRolesEnum>();
-        const collection = MafiaGameUtils.getCollectionOfMafiaRole(1);
+        const collection = MafiaGameUtils.getUniqueGameRolesCollection();
         collection.map(item => this.turn.push(item));
     }
 }
 
-export default MafiaState;
+
+export default VoteState;
