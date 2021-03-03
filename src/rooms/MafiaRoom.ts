@@ -1,6 +1,6 @@
 import * as http from 'http';
 import {Client, Room} from 'colyseus';
-import MafiaGame from "./Schema/MafiaGame";
+import MafiaRoomState from "./Schema/MafiaRoomState";
 import {RoomsNameEnum} from "../utils/colyseusServer";
 import {CREATED, JOINED, LEFT, REMOVED} from "../utils/RoomLogs";
 
@@ -11,15 +11,22 @@ export enum MafiaRoomEnum {
 }
 
 class MafiaRoom extends Room {
-    public state: MafiaGame;
+    public state: MafiaRoomState;
     private ROOM_NAME: string;
 
     onCreate(options: any): void | Promise<any> {
+
+        // configs
         this.ROOM_NAME = `${RoomsNameEnum.MAFIA}#${this.roomId}`;
         this.maxClients = 16;
-        this.setState(new MafiaGame());
-        this.onMessage(MafiaRoomEnum.ACTION, (client, message) => this.state.action())
-        this.onMessage(MafiaRoomEnum.START, (client, message) => this.state.startGame(client))
+
+        // state
+        this.setState(new MafiaRoomState());
+
+        // events
+        this.onMessage(MafiaRoomEnum.ACTION, (client, message) => this.state.gameState.action());
+        this.onMessage(MafiaRoomEnum.START, (client, message) => this.state.gameState.startGame(client));
+
         CREATED(this.ROOM_NAME);
     }
 

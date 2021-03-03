@@ -1,7 +1,5 @@
-import {
-    InvalidNumberOfPlayersError,
-    MafiaRoomErrorsEnum
-} from "../Errors/MafiaRoomErrors";
+import {InvalidNumberOfPlayersError, MafiaRoomErrorsEnum} from "../Errors/MafiaRoomErrors";
+import {ArraySchema} from "@colyseus/schema";
 
 export enum MafiaRolesEnum {
     MAFIA = 'MAFIA',
@@ -15,6 +13,17 @@ export enum MafiaRolesEnum {
 export enum MafiaGameEnum {
     MIN_NUMBER_OF_PLAYERS = 4,
     MAX_NUMBER_OF_PLAYERS = 16,
+    STANDARD_NUMBER_OF_DOCTORS = 1,
+    STANDARD_DIFFERENCE_BETWEEN_MAFIA_AND_DETECTIVES = 1,
+    STANDARD_PERCENTAGE_FOR_MAFIA = 0.25,
+    STANDARD_MIN_NUMBER_FOR_EACH_ROLE = 0
+}
+
+interface NumberOfEachRole {
+    numberOfMafia: number;
+    numberOfDetectives: number;
+    numberOfDoctors: number;
+    numberOfInnocents: number;
 }
 
 abstract class MafiaGameUtils {
@@ -29,8 +38,14 @@ abstract class MafiaGameUtils {
             const numberOfDetectives = this.getNumberOfDetectives(numberOfPlayers);
             const numberOfDoctors = this.getNumberOfDoctors(numberOfPlayers);
             const numberOfInnocents = this.getNumberOfInnocents(numberOfPlayers);
+            const numberOfEachRole: NumberOfEachRole = {
+                numberOfMafia,
+                numberOfDetectives,
+                numberOfDoctors,
+                numberOfInnocents
+            }
 
-            const gameRolesCollection = this.getGameRolesCollection(numberOfMafia, numberOfDetectives, numberOfDoctors, numberOfInnocents);
+            const gameRolesCollection = this.getGameRolesCollection(numberOfEachRole);
 
             if (shuffle) {
                 this.shuffleCollections(gameRolesCollection);
@@ -46,26 +61,29 @@ abstract class MafiaGameUtils {
         return [MafiaRolesEnum.MAFIA, MafiaRolesEnum.DETECTIVE, MafiaRolesEnum.DOCTOR, MafiaRolesEnum.INNOCENT];
     }
 
-    public static getGameRolesCollection(numberOfMafia: number, numberOfDetectives: number, numberOfDoctors: number, numberOfInnocents: number): Array<MafiaRolesEnum> {
-        const mafiaCollection = this.getCollectionOfMafiaRole(numberOfMafia);
-        const detectivesCollection = this.getCollectionOfDetectiveRole(numberOfDetectives);
-        const doctorCollection = this.getCollectionOfDoctorRole(numberOfDoctors);
-        const innocentsCollection = this.getCollectionOfInnocentRole(numberOfInnocents);
+    public static getGameRolesCollection(numberOfEachRole: NumberOfEachRole): Array<MafiaRolesEnum> {
+        const mafiaCollection = this.getCollectionOfMafiaRole(numberOfEachRole.numberOfMafia);
+        const detectivesCollection = this.getCollectionOfDetectiveRole(numberOfEachRole.numberOfDetectives);
+        const doctorCollection = this.getCollectionOfDoctorRole(numberOfEachRole.numberOfDoctors);
+        const innocentsCollection = this.getCollectionOfInnocentRole(numberOfEachRole.numberOfInnocents);
 
         return [...mafiaCollection, ...detectivesCollection, ...doctorCollection, ...innocentsCollection];
     }
 
     public static getNumberOfMafia(numberOfPlayers: number): number {
-        return Math.max(Math.floor(numberOfPlayers / 4), 0);
+        const numberOfMafia = Math.floor(numberOfPlayers * MafiaGameEnum.STANDARD_PERCENTAGE_FOR_MAFIA);
+        return Math.max(numberOfMafia, MafiaGameEnum.STANDARD_MIN_NUMBER_FOR_EACH_ROLE);
     }
 
     public static getNumberOfDetectives(numberOfPlayers: number): number {
         const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
-        return Math.max(numberOfMafia - 1, 0);
+        const numberOfDetectives = numberOfMafia - MafiaGameEnum.STANDARD_DIFFERENCE_BETWEEN_MAFIA_AND_DETECTIVES;
+        return Math.max(numberOfDetectives, MafiaGameEnum.STANDARD_MIN_NUMBER_FOR_EACH_ROLE);
     }
 
     public static getNumberOfDoctors(numberOfPlayers: number): number {
-        return Math.max(Math.min(1, numberOfPlayers), 0);
+        const numberOfDoctors = Math.min(MafiaGameEnum.STANDARD_NUMBER_OF_DOCTORS, numberOfPlayers);
+        return Math.max(numberOfDoctors, MafiaGameEnum.STANDARD_MIN_NUMBER_FOR_EACH_ROLE);
     }
 
     public static getNumberOfInnocents(numberOfPlayers: number): number {
@@ -92,13 +110,19 @@ abstract class MafiaGameUtils {
     }
 
     public static getCollectionOfSpecificRole(numberOf: number, role: MafiaRolesEnum): Array<MafiaRolesEnum> {
-        numberOf = Math.max(numberOf, 0);
+        numberOf = Math.max(numberOf, MafiaGameEnum.STANDARD_MIN_NUMBER_FOR_EACH_ROLE);
         const collection = [];
         while (numberOf--) {
             collection.push(role);
         }
 
         return collection;
+    }
+
+    public static toArraySchema(collection: Array<any>): ArraySchema {
+        const arraySchema = new ArraySchema();
+        collection.map(item => arraySchema.push(item));
+        return arraySchema;
     }
 
     // Fisher-Yates (aka Knuth) Shuffle Algorithm

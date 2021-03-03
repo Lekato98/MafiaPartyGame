@@ -1,24 +1,23 @@
-import State, {StatesEnum, StatesPhaseTime} from "./State";
+import AbstractPhases, {StatesEnum, StatesPhaseTime} from "./AbstractPhases";
 import {MafiaRolesEnum} from "../../Utils/MafiaGameUtils";
-import DiscussState from "./DiscussState";
+import DiscussPhase from "./DiscussPhase";
 import {ArraySchema} from "@colyseus/schema";
+import MafiaGameState from "../MafiaGameState";
 
-class DayState extends State {
-    constructor() {
+class DayPhase extends AbstractPhases {
+    constructor(context: MafiaGameState) {
         super();
+        this.context = context;
         this.refreshDayState();
     }
 
-    action(): State {
-        return new DiscussState();
+    goToNextState() {
+        const discussState = new DiscussPhase(this.context);
+        this.context.setCurrentState(discussState);
     }
 
     getNextState(): StatesEnum {
         return StatesEnum.DISCUSS_STATE;
-    }
-
-    getState(): StatesEnum {
-        return this.stateName;
     }
 
     refreshDayState(): void {
@@ -29,4 +28,4 @@ class DayState extends State {
     }
 }
 
-export default DayState;
+export default DayPhase;

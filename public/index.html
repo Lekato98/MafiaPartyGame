@@ -7,34 +7,51 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>
-        current turns
-    </h1>
-    <div id='state'></div>
+<h1>
+    current turns
+</h1>
+<div id='startBtn'></div>
+<div id='state'></div>
 
-    <div id='turns'></div>
+<div id='turns'></div>
 
-    <div id='time'></div>
-    <script>
+<div id='time'></div>
+<script>
+  let room = '';
 
   async function createClient() {
     const endPoint = 'ws://localhost:4567';
     const client = new Colyseus.Client(endPoint);
-    const room = await client.joinOrCreate('Mafia',
+    room = await client.joinOrCreate('Mafia',
         {username: 'lee', jointType: 'PLAYER'});
-    room.send('START');
+
     room.onMessage('ERROR', (message) => alert(message));
+    room.onLeave(code => {
+      if (code === 1006) {
+        alert('Server Offline!\n code: ' + code);
+      }
+
+      resetBody();
+    });
     room.onStateChange.once((state) => {
+      if (state.gameState.gameLeader === room.sessionId) {
+        setGameLeader();
+      }
       setStateName(state);
       setCurrentTurns(state);
-      setCurrentTime(state);
+      if (state.gameState.gameStarted)
+        setCurrentTime(state);
       console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
     });
 
     room.onStateChange((state) => {
+      if (state.gameState.gameLeader === room.sessionId) {
+        setGameLeader();
+      }
       setStateName(state);
       setCurrentTurns(state);
-      setCurrentTime(state);
+      if (state.gameState.gameStarted)
+        setCurrentTime(state);
       // console.log(`Updated state: ${JSON.stringify(state, null, 2)}`);
     });
 
@@ -42,21 +59,33 @@
     // setInterval(() => room.send('ACTION'), 2000);
   }
 
+  function setGameLeader() {
+    const startBtn = document.createElement('button');
+    const startBtnDiv = document.querySelector('#startBtn');
+    startBtn.addEventListener('click', () => room.send('START'));
+    startBtn.innerText = 'Start';
+    startBtnDiv.append(startBtn);
+  }
+
+  function resetBody() {
+    document.body.innerHTML = '<h1>Current AbstractPhases</h1>';
+  }
+
   function setStateName(state) {
     const stateDiv = document.querySelector('#state');
-    stateDiv.innerHTML = state.gameHandler.currentState.stateName;
+    stateDiv.innerHTML = state.gameState.currentState.stateName;
   }
 
   function setCurrentTurns(state) {
     const turns = document.querySelector('#turns');
     let template = '';
-    state.gameHandler.currentState.turn.forEach(item => template += `${item}, `);
+    state.gameState.currentState.turn.forEach(item => template += `${item}, `);
     turns.innerText = template;
   }
 
   function setCurrentTime(state) {
     const time = document.querySelector('#time');
-    let phaseTime = state.gameHandler.currentState.phaseTime - 1;
+    let phaseTime = state.gameState.currentState.phaseTime - 1;
     time.innerText = phaseTime;
     const timeInterval = setInterval(() => {
       if (--phaseTime >= 0) {
@@ -66,7 +95,6 @@
       }
     }, 1000);
   }
-
 
   createClient().catch(err => alert(err));
 

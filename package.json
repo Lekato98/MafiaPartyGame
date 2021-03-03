@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "testMafia": "npx colyseus-loadtest test/MafiaRoom.test.ts --room Mafia --numClients 50 --endpoint ws://localhost:4567"
+    "test-mafia": "npx colyseus-loadtest test/MafiaRoom.test.ts --room Mafia --numClients 50 --endpoint ws://localhost:4567",
+    "schema-gen": "schema-codegen src/rooms/Schema/MafiaRoomState.ts --output client-side/ --csharp"
   },
   "author": "Hamza Farhan",
   "license": "ISC",
