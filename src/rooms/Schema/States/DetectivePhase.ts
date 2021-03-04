@@ -1,31 +1,31 @@
-import AbstractPhases, {StatesEnum, StatesPhaseTime} from "./AbstractPhases";
+import AbstractPhase, {PhaseEnum, PhaseTime} from "./AbstractPhase";
 import DoctorPhase from "./DoctorPhase";
 import MafiaGameUtils, {MafiaRolesEnum} from "../../Utils/MafiaGameUtils";
 import {ArraySchema} from "@colyseus/schema";
 import MafiaGameState from "../MafiaGameState";
 
-class DetectivePhase extends AbstractPhases {
+class DetectivePhase extends AbstractPhase {
     constructor(context: MafiaGameState) {
         super();
         this.context = context;
         this.refreshDetectiveState();
     }
 
-    goToNextState() {
-        const doctorState = new DoctorPhase(this.context);
-        this.context.setCurrentState(doctorState);
+    goToNextPhase(): void {
+        const doctorPhase = new DoctorPhase(this.context);
+        this.context.setCurrentPhase(doctorPhase);
     }
 
-    getNextState(): StatesEnum {
-        return StatesEnum.DOCTOR_STATE;
+    getNextPhase(): PhaseEnum {
+        return PhaseEnum.DOCTOR_PHASE;
     }
 
     refreshDetectiveState(): void {
-        this.stateName = StatesEnum.DETECTIVE_STATE;
-        this.phaseTime = StatesPhaseTime.DETECTIVE_PHASE_TIME;
-        this.turn = new ArraySchema<MafiaRolesEnum>();
+        this.phaseName = PhaseEnum.DETECTIVE_PHASE;
+        this.phaseTime = PhaseTime.DETECTIVE_PHASE_TIME;
+        this.activeRolesForCurrentState = new ArraySchema<MafiaRolesEnum>();
         const collection = MafiaGameUtils.getCollectionOfDetectiveRole(1);
-        collection.map(item => this.turn.push(item));
+        collection.map(item => this.activeRolesForCurrentState.push(item));
     }
 }
 

@@ -1,5 +1,6 @@
 import {InvalidNumberOfPlayersError, MafiaRoomErrorsEnum} from "../Errors/MafiaRoomErrors";
 import {ArraySchema} from "@colyseus/schema";
+import {PhaseEnum} from "../Schema/States/AbstractPhase";
 
 export enum MafiaRolesEnum {
     MAFIA = 'MAFIA',
@@ -26,13 +27,14 @@ interface NumberOfEachRole {
     numberOfInnocents: number;
 }
 
+// @TODO Change class name to MafiaRoleUtils
 abstract class MafiaGameUtils {
-    public static isValidNumberOfPlayers(numberOfPlayers: number) {
+    public static isValidNumberOfPlayers(numberOfPlayers: number): boolean {
         return numberOfPlayers >= MafiaGameEnum.MIN_NUMBER_OF_PLAYERS
             && numberOfPlayers <= MafiaGameEnum.MAX_NUMBER_OF_PLAYERS;
     }
 
-    public static createGameRolesCollection(numberOfPlayers: number, shuffle: boolean = false): Array<MafiaRolesEnum> {
+    public static createStandardGameRolesCollection(numberOfPlayers: number): Array<MafiaRolesEnum> {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
             const numberOfDetectives = this.getNumberOfDetectives(numberOfPlayers);
@@ -45,19 +47,19 @@ abstract class MafiaGameUtils {
                 numberOfInnocents
             }
 
-            const gameRolesCollection = this.getGameRolesCollection(numberOfEachRole);
-
-            if (shuffle) {
-                this.shuffleCollections(gameRolesCollection);
-            }
-
-            return gameRolesCollection;
+            return this.getGameRolesCollection(numberOfEachRole);
         } else {
             throw new InvalidNumberOfPlayersError(MafiaRoomErrorsEnum.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
-    public static getUniqueGameRolesCollection() {
+    public static createShuffledGameRolesCollection(numberOfPlayers: number): Array<MafiaRolesEnum> {
+        const shuffledGameRolesCollection = this.createStandardGameRolesCollection(numberOfPlayers);
+        this.shuffleCollections(shuffledGameRolesCollection);
+        return shuffledGameRolesCollection;
+    }
+
+    public static getUniqueGameRolesCollection(): Array<MafiaRolesEnum> {
         return [MafiaRolesEnum.MAFIA, MafiaRolesEnum.DETECTIVE, MafiaRolesEnum.DOCTOR, MafiaRolesEnum.INNOCENT];
     }
 
@@ -119,12 +121,40 @@ abstract class MafiaGameUtils {
         return collection;
     }
 
+    // @TODO move it to MafiaPhaseUtils
+    public static getNextPhase(currentPhase: PhaseEnum): PhaseEnum {
+        switch (currentPhase) {
+            case PhaseEnum.NIGHT_PHASE:
+                return PhaseEnum.MAFIA_PHASE;
+
+            case PhaseEnum.MAFIA_PHASE:
+                return PhaseEnum.DETECTIVE_PHASE;
+
+            case PhaseEnum.DETECTIVE_PHASE:
+                return PhaseEnum.DOCTOR_PHASE
+
+            case PhaseEnum.DOCTOR_PHASE:
+                return PhaseEnum.DAY_PHASE;
+
+            case PhaseEnum.DAY_PHASE:
+                return PhaseEnum.DISCUSS_PHASE;
+
+            case PhaseEnum.DISCUSS_PHASE:
+                return PhaseEnum.VOTE_PHASE;
+
+            case PhaseEnum.VOTE_PHASE:
+                return PhaseEnum.NIGHT_PHASE;
+        }
+    }
+
+    // @TODO move it to MafiaStandardUtils
     public static toArraySchema(collection: Array<any>): ArraySchema {
         const arraySchema = new ArraySchema();
         collection.map(item => arraySchema.push(item));
         return arraySchema;
     }
 
+    // @TODO move it to MafiaStandardUtils
     // Fisher-Yates (aka Knuth) Shuffle Algorithm
     public static shuffleCollections(collection: Array<any>): void {
         let currentIndex: number = collection.length;

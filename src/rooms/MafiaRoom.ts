@@ -18,14 +18,20 @@ class MafiaRoom extends Room {
 
         // configs
         this.ROOM_NAME = `${RoomsNameEnum.MAFIA}#${this.roomId}`;
-        this.maxClients = 16;
+        this.maxClients = 30;
 
         // state
         this.setState(new MafiaRoomState());
 
         // events
         this.onMessage(MafiaRoomEnum.ACTION, (client, message) => this.state.gameState.action());
-        this.onMessage(MafiaRoomEnum.START, (client, message) => this.state.gameState.startGame(client));
+        this.onMessage(MafiaRoomEnum.START, (client, message) => {
+            try {
+                this.state.gameState.startGame(client)
+            } catch (err) {
+                client.send(MafiaRoomEnum.ERROR, err.message);
+            }
+        });
 
         CREATED(this.ROOM_NAME);
     }

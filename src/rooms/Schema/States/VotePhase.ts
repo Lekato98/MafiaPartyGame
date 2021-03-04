@@ -1,31 +1,31 @@
-import AbstractPhases, {StatesEnum, StatesPhaseTime} from "./AbstractPhases";
+import AbstractPhase, {PhaseEnum, PhaseTime} from "./AbstractPhase";
 import MafiaGameUtils, {MafiaRolesEnum} from "../../Utils/MafiaGameUtils";
 import NightPhase from "./NightPhase";
 import {ArraySchema} from "@colyseus/schema";
 import MafiaGameState from "../MafiaGameState";
 
-class VotePhase extends AbstractPhases {
+class VotePhase extends AbstractPhase {
     constructor(context: MafiaGameState) {
         super();
         this.context = context;
         this.refreshVoteState();
     }
 
-    goToNextState() {
-        const nightState = new NightPhase(this.context);
-        this.context.setCurrentState(nightState);
+    goToNextPhase(): void {
+        const nightPhase = new NightPhase(this.context);
+        this.context.setCurrentPhase(nightPhase);
     }
 
-    getNextState(): StatesEnum {
-        return StatesEnum.NIGHT_STATE;
+    getNextPhase(): PhaseEnum {
+        return PhaseEnum.NIGHT_PHASE;
     }
 
     refreshVoteState(): void {
-        this.stateName = StatesEnum.VOTE_STATE;
-        this.phaseTime = StatesPhaseTime.VOTE_PHASE_TIME;
-        this.turn = new ArraySchema<MafiaRolesEnum>();
+        this.phaseName = PhaseEnum.VOTE_PHASE;
+        this.phaseTime = PhaseTime.VOTE_PHASE_TIME;
+        this.activeRolesForCurrentState = new ArraySchema<MafiaRolesEnum>();
         const collection = MafiaGameUtils.getUniqueGameRolesCollection();
-        collection.map(item => this.turn.push(item));
+        collection.map(item => this.activeRolesForCurrentState.push(item));
     }
 }
 

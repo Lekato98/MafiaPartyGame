@@ -14,6 +14,7 @@ export enum MafiaRoomStateEnum {
     INITIAL_NUMBER_OF_PLAYERS = 0,
     INITIAL_NUMBER_OF_SPECTATORS = 0,
     DEFAULT_GAME_LEADER = '',
+    SKIP_PHASE_TIME = 0,
 }
 
 class MafiaRoomState extends Schema {
@@ -43,6 +44,7 @@ class MafiaRoomState extends Schema {
                     } else {
                         this.players.push(new Player(client.sessionId, clientOptions.username));
                         this.numberOfPlayers++;
+                        this.gameState.fixGameLeader();
                     }
                     break;
 
@@ -52,7 +54,6 @@ class MafiaRoomState extends Schema {
                     break;
             }
 
-            this.gameState.fixGameLeader();
             this.clientJointType.set(client.sessionId, clientOptions.jointType);
         }
     }

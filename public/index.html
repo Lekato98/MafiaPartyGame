@@ -26,14 +26,21 @@
         {username: 'lee', jointType: 'PLAYER'});
 
     room.onMessage('ERROR', (message) => alert(message));
-    room.onLeave(code => {
-      if (code === 1006) {
-        alert('Server Offline!\n code: ' + code);
+    room.onLeave((code, message) => {
+      switch (code) {
+        case 1006:
+          alert('Server Offline!\n code: ' + code);
+          break;
+
+        case 1016:
+          alert(`${message}!\n code: ` + code);
+          break;
       }
 
       resetBody();
     });
     room.onStateChange.once((state) => {
+      console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
       if (state.gameState.gameLeader === room.sessionId) {
         setGameLeader();
       }
@@ -41,10 +48,10 @@
       setCurrentTurns(state);
       if (state.gameState.gameStarted)
         setCurrentTime(state);
-      console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
     });
 
     room.onStateChange((state) => {
+      console.log('update: ', JSON.stringify(state, null, 2))
       if (state.gameState.gameLeader === room.sessionId) {
         setGameLeader();
       }
@@ -68,24 +75,24 @@
   }
 
   function resetBody() {
-    document.body.innerHTML = '<h1>Current AbstractPhases</h1>';
+    document.body.innerHTML = '<h1>Current AbstractPhase</h1>';
   }
 
   function setStateName(state) {
     const stateDiv = document.querySelector('#state');
-    stateDiv.innerHTML = state.gameState.currentState.stateName;
+    stateDiv.innerHTML = state.gameState.currentPhase.phaseName;
   }
 
   function setCurrentTurns(state) {
     const turns = document.querySelector('#turns');
     let template = '';
-    state.gameState.currentState.turn.forEach(item => template += `${item}, `);
+    state.gameState.currentPhase.activeRolesForCurrentState.forEach(item => template += `${item}, `);
     turns.innerText = template;
   }
 
   function setCurrentTime(state) {
     const time = document.querySelector('#time');
-    let phaseTime = state.gameState.currentState.phaseTime - 1;
+    let phaseTime = state.gameState.currentPhase.phaseTime;
     time.innerText = phaseTime;
     const timeInterval = setInterval(() => {
       if (--phaseTime >= 0) {

@@ -1,5 +1,5 @@
 import {ArraySchema, defineTypes, Schema} from "@colyseus/schema";
-import AbstractPhases from "./States/AbstractPhases";
+import AbstractPhase from "./States/AbstractPhase";
 import NightPhase from "./States/NightPhase";
 import {Client} from "colyseus";
 import MafiaGameUtils, {MafiaRolesEnum} from "../Utils/MafiaGameUtils";
@@ -11,9 +11,9 @@ import {MafiaRoomStateEnum} from "./MafiaRoomState";
 class MafiaGameState extends Schema {
 
     // NIGHT -> MAFIA -> DET -> DOC -> DAY -> DISC -> VOTE -> NIGHT
-    private currentPhase: AbstractPhases;
+    private currentPhase: AbstractPhase;
     private rolesCollection: ArraySchema<MafiaRolesEnum>; // will be used to (reconnect, disconnect, bots)
-    private players: ArraySchema<Player>;
+    public players: ArraySchema<Player>;
     private gameLeader: string;
     private gameStarted: boolean;
 
@@ -40,26 +40,27 @@ class MafiaGameState extends Schema {
     }
 
     startGameLifeCycle(): void | Promise<any> {
-        const phaseTime = this.currentPhase.getPhaseTime() * MafiaRoomStateEnum.MILLISECOND;
+        const phaseTime: number = this.getPhaseTimeInMilliseconds();
+
         setTimeout(() => {
-            this.currentPhase.goToNextState();
+            this.currentPhase.goToNextPhase();
             this.startGameLifeCycle();
         }, phaseTime);
     }
 
     action(): void {
-        this.currentPhase.goToNextState();
+        this.currentPhase.goToNextPhase();
     }
 
-    setCurrentState(newState: AbstractPhases) {
-        this.currentPhase = newState;
+    setCurrentPhase(newPhase: AbstractPhase): void {
+        this.currentPhase = newPhase;
     }
 
     setRolesCollection(rolesCollection: ArraySchema<MafiaRolesEnum>): void {
         this.rolesCollection = rolesCollection;
     }
 
-    setPlayersRole(rolesCollection: ArraySchema<MafiaRolesEnum>) {
+    setPlayersRole(rolesCollection: ArraySchema<MafiaRolesEnum>): void {
         rolesCollection.map((role, index) => this.players[index].setRole(role));
     }
 
@@ -67,7 +68,7 @@ class MafiaGameState extends Schema {
         this.gameLeader = gameLeader;
     }
 
-    setGameStarted(gameStarted: boolean) {
+    setGameStarted(gameStarted: boolean): void {
         this.gameStarted = gameStarted;
     }
 
@@ -79,7 +80,19 @@ class MafiaGameState extends Schema {
         return client.sessionId === this.gameLeader;
     }
 
-    fixGameLeader() {
+    getPhaseTimeInMilliseconds(): number {
+        const existPlayerMatchTurn: boolean = this.players.some(player => this.currentPhase.activeRolesForCurrentState.indexOf(player.getRole()) !== -1)
+        const isModeratorTurn: boolean = this.currentPhase.activeRolesForCurrentState.indexOf(MafiaRolesEnum.MODERATOR) !== -1;
+
+        const phaseTimeInMillisecond = this.currentPhase.getPhaseTime() * MafiaRoomStateEnum.MILLISECOND;
+        if (existPlayerMatchTurn || isModeratorTurn) {
+            return phaseTimeInMillisecond;
+        } else {
+            return MafiaRoomStateEnum.SKIP_PHASE_TIME;
+        }
+    }
+
+    fixGameLeader(): void {
         if (this.players.length) {
             this.setGameLeader(this.players[0].getSessionId());
         } else {
@@ -95,7 +108,7 @@ class MafiaGameState extends Schema {
 }
 
 defineTypes(MafiaGameState, {
-    currentState: AbstractPhases,
+    currentPhase: AbstractPhase,
     rolesCollection: ['string'],
     gameStarted: 'boolean',
     gameLeader: 'string',
