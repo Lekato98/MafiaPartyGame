@@ -1,19 +1,22 @@
 import {ArraySchema, defineTypes, Schema} from "@colyseus/schema";
-import AbstractPhase from "./States/AbstractPhase";
-import NightPhase from "./States/NightPhase";
+import AbstractPhase from "./MafiaPhases/AbstractPhase";
+import NightPhase from "./MafiaPhases/NightPhase";
 import {Client} from "colyseus";
-import MafiaGameUtils, {MafiaRolesEnum} from "../Utils/MafiaGameUtils";
+import MafiaRolesUtils, {MafiaRolesEnum} from "../MafiaUtils/MafiaRolesUtils";
 import Player from "./Player";
 import {MafiaRoomEnum} from "../MafiaRoom";
 import {MafiaRoomErrorsEnum} from "../Errors/MafiaRoomErrors";
 import {MafiaRoomStateEnum} from "./MafiaRoomState";
+import MafiaSupportUtils from "../MafiaUtils/MafiaSupportUtils";
+import {MafiaPhasesNameEnum} from "../MafiaUtils/MafiaPhasesUtils";
+import PhasesFactory from "./MafiaPhases/PhasesFactory";
 
 class MafiaGameState extends Schema {
 
     // NIGHT -> MAFIA -> DET -> DOC -> DAY -> DISC -> VOTE -> NIGHT
     private currentPhase: AbstractPhase;
-    private rolesCollection: ArraySchema<MafiaRolesEnum>; // will be used to (reconnect, disconnect, bots)
-    public players: ArraySchema<Player>;
+    private rolesCollection: ArraySchema<MafiaRolesEnum>;
+    private players: ArraySchema<Player>;
     private gameLeader: string;
     private gameStarted: boolean;
 
@@ -29,31 +32,23 @@ class MafiaGameState extends Schema {
         } else if (!this.isGameLeader(client)) {
             client.send(MafiaRoomEnum.ERROR, MafiaRoomErrorsEnum.NOT_GAME_LEADER);
         } else {
-            const numberOfPlayers: number = this.players.length;
-            const gameRolesCollection: ArraySchema<MafiaRolesEnum> =
-                MafiaGameUtils.toArraySchema(MafiaGameUtils.createGameRolesCollection(numberOfPlayers, true));
-            this.setPlayersRole(gameRolesCollection);
-            this.setRolesCollection(gameRolesCollection);
+            this.buildGameRoles();
             this.setGameStarted(true);
-            this.startGameLifeCycle();
+            this.gameLifeCycle();
         }
     }
 
-    startGameLifeCycle(): void | Promise<any> {
-        const phaseTime: number = this.getPhaseTimeInMilliseconds();
+    gameLifeCycle(): void | Promise<any> {
+        const phaseTime: number = this.currentPhase.getPhaseTime() * MafiaRoomStateEnum.MILLISECOND;
 
         setTimeout(() => {
             this.currentPhase.goToNextPhase();
-            this.startGameLifeCycle();
+            this.gameLifeCycle();
         }, phaseTime);
     }
 
-    action(): void {
-        this.currentPhase.goToNextPhase();
-    }
-
-    setCurrentPhase(newPhase: AbstractPhase): void {
-        this.currentPhase = newPhase;
+    setCurrentPhaseByName(newPhaseName: MafiaPhasesNameEnum): void {
+        this.currentPhase = PhasesFactory.createPhase(newPhaseName, this);
     }
 
     setRolesCollection(rolesCollection: ArraySchema<MafiaRolesEnum>): void {
@@ -72,6 +67,10 @@ class MafiaGameState extends Schema {
         this.gameStarted = gameStarted;
     }
 
+    getRolesCollection(): ArraySchema<MafiaRolesEnum> {
+        return this.rolesCollection;
+    }
+
     isGameStarted(): boolean {
         return this.gameStarted;
     }
@@ -80,24 +79,21 @@ class MafiaGameState extends Schema {
         return client.sessionId === this.gameLeader;
     }
 
-    getPhaseTimeInMilliseconds(): number {
-        const existPlayerMatchTurn: boolean = this.players.some(player => this.currentPhase.activeRolesForCurrentState.indexOf(player.getRole()) !== -1)
-        const isModeratorTurn: boolean = this.currentPhase.activeRolesForCurrentState.indexOf(MafiaRolesEnum.MODERATOR) !== -1;
-
-        const phaseTimeInMillisecond = this.currentPhase.getPhaseTime() * MafiaRoomStateEnum.MILLISECOND;
-        if (existPlayerMatchTurn || isModeratorTurn) {
-            return phaseTimeInMillisecond;
-        } else {
-            return MafiaRoomStateEnum.SKIP_PHASE_TIME;
-        }
-    }
-
     fixGameLeader(): void {
         if (this.players.length) {
             this.setGameLeader(this.players[0].getSessionId());
         } else {
             this.setGameLeader('');
         }
+    }
+
+    buildGameRoles(): void {
+        const numberOfPlayers: number = this.players.length;
+        const gameRolesCollection: ArraySchema<MafiaRolesEnum> = MafiaSupportUtils.convertArrayToArraySchema(
+            MafiaRolesUtils.createShuffledGameRolesCollection(numberOfPlayers)
+        );
+        this.setRolesCollection(gameRolesCollection);
+        this.setPlayersRole(this.rolesCollection);
     }
 
     refreshMafiaGameState(): void {

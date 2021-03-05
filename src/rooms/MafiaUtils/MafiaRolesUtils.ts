@@ -1,6 +1,5 @@
 import {InvalidNumberOfPlayersError, MafiaRoomErrorsEnum} from "../Errors/MafiaRoomErrors";
-import {ArraySchema} from "@colyseus/schema";
-import {PhaseEnum} from "../Schema/States/AbstractPhase";
+import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaRolesEnum {
     MAFIA = 'MAFIA',
@@ -28,7 +27,7 @@ interface NumberOfEachRole {
 }
 
 // @TODO Change class name to MafiaRoleUtils
-abstract class MafiaGameUtils {
+abstract class MafiaRolesUtils {
     public static isValidNumberOfPlayers(numberOfPlayers: number): boolean {
         return numberOfPlayers >= MafiaGameEnum.MIN_NUMBER_OF_PLAYERS
             && numberOfPlayers <= MafiaGameEnum.MAX_NUMBER_OF_PLAYERS;
@@ -55,7 +54,7 @@ abstract class MafiaGameUtils {
 
     public static createShuffledGameRolesCollection(numberOfPlayers: number): Array<MafiaRolesEnum> {
         const shuffledGameRolesCollection = this.createStandardGameRolesCollection(numberOfPlayers);
-        this.shuffleCollections(shuffledGameRolesCollection);
+        MafiaSupportUtils.shuffleCollections(shuffledGameRolesCollection);
         return shuffledGameRolesCollection;
     }
 
@@ -120,60 +119,6 @@ abstract class MafiaGameUtils {
 
         return collection;
     }
-
-    // @TODO move it to MafiaPhaseUtils
-    public static getNextPhase(currentPhase: PhaseEnum): PhaseEnum {
-        switch (currentPhase) {
-            case PhaseEnum.NIGHT_PHASE:
-                return PhaseEnum.MAFIA_PHASE;
-
-            case PhaseEnum.MAFIA_PHASE:
-                return PhaseEnum.DETECTIVE_PHASE;
-
-            case PhaseEnum.DETECTIVE_PHASE:
-                return PhaseEnum.DOCTOR_PHASE
-
-            case PhaseEnum.DOCTOR_PHASE:
-                return PhaseEnum.DAY_PHASE;
-
-            case PhaseEnum.DAY_PHASE:
-                return PhaseEnum.DISCUSS_PHASE;
-
-            case PhaseEnum.DISCUSS_PHASE:
-                return PhaseEnum.VOTE_PHASE;
-
-            case PhaseEnum.VOTE_PHASE:
-                return PhaseEnum.NIGHT_PHASE;
-        }
-    }
-
-    // @TODO move it to MafiaStandardUtils
-    public static toArraySchema(collection: Array<any>): ArraySchema {
-        const arraySchema = new ArraySchema();
-        collection.map(item => arraySchema.push(item));
-        return arraySchema;
-    }
-
-    // @TODO move it to MafiaStandardUtils
-    // Fisher-Yates (aka Knuth) Shuffle Algorithm
-    public static shuffleCollections(collection: Array<any>): void {
-        let currentIndex: number = collection.length;
-        let temporaryValue: any;
-        let randomIndex: number;
-
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-
-            // And swap it with the current element.
-            temporaryValue = collection[currentIndex];
-            collection[currentIndex] = collection[randomIndex];
-            collection[randomIndex] = temporaryValue;
-        }
-    }
 }
 
-export default MafiaGameUtils;
+export default MafiaRolesUtils;

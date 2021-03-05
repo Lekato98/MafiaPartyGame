@@ -7,10 +7,18 @@ export enum MafiaRoomErrorsNameEnum {
 
 export enum MafiaRoomErrorsEnum {
     ROOM_IS_FULL = 'ROOM IS FULL',
-    INVALID_NUMBER_OF_PLAYERS = 'INVALID NUMBER OF PLAYERS',
+    INVALID_NUMBER_OF_PLAYERS = 'INVALID NUMBER OF PLAYERS', // @TODO move to MafiaErrorsEnum
     INVALID_CLIENT_TYPE = 'INVALID CLIENT TYPE',
-    GAME_ALREADY_STARTED = 'GAME ALREADY STARTED',
-    NOT_GAME_LEADER = 'ONLY GAME LEADER CAN START THE GAME!',
+    GAME_ALREADY_STARTED = 'GAME ALREADY STARTED', // @TODO move to MafiaErrorsEnum
+    NOT_GAME_LEADER = 'ONLY GAME LEADER CAN START THE GAME!', // @TODO move to MafiaErrorsEnum
+}
+
+export enum MafiaErrorsNameEnum {
+    INVALID_PHASE_NAME = 'InvalidPhaseName',
+}
+
+export enum MafiaErrorsEnum {
+    UNKNOWN_PHASE_NAME = 'UNKNOWN PHASE NAME ',
 }
 
 export class RoomIsFullError extends Error {
@@ -62,5 +70,18 @@ export class GameAlreadyStarted extends Error {
 
         this.code = code;
         this.name = MafiaRoomErrorsNameEnum.GAME_ALREADY_STARTED;
+    }
+}
+
+export class InvalidPhaseName extends Error {
+    readonly code: number;
+    readonly name: string;
+
+    constructor(message?: string, code?: number) {
+        super(message);
+        Object.setPrototypeOf(this, InvalidPhaseName.prototype);
+
+        this.code = code;
+        this.name = MafiaErrorsNameEnum.INVALID_PHASE_NAME;
     }
 }

@@ -1,4 +1,4 @@
-import AbstractPhase, {PhaseEnum} from "./AbstractPhase";
+import AbstractPhase from "./AbstractPhase";
 import MafiaGameState from "../MafiaGameState";
 import NightPhase from "./NightPhase";
 import MafiaPhase from "./MafiaPhase";
@@ -7,29 +7,30 @@ import DoctorPhase from "./DoctorPhase";
 import DayPhase from "./DayPhase";
 import DiscussPhase from "./DiscussPhase";
 import VotePhase from "./VotePhase";
+import {MafiaPhasesNameEnum} from "../../MafiaUtils/MafiaPhasesUtils";
 
 class PhaseFactory {
-    public static createPhase(phaseType: PhaseEnum, context: MafiaGameState): AbstractPhase {
+    public static createPhase(phaseType: MafiaPhasesNameEnum, context: MafiaGameState): AbstractPhase {
         switch (phaseType) {
-            case PhaseEnum.NIGHT_PHASE:
+            case MafiaPhasesNameEnum.NIGHT_PHASE:
                 return new NightPhase(context);
 
-            case PhaseEnum.MAFIA_PHASE:
+            case MafiaPhasesNameEnum.MAFIA_PHASE:
                 return new MafiaPhase(context);
 
-            case PhaseEnum.DETECTIVE_PHASE:
+            case MafiaPhasesNameEnum.DETECTIVE_PHASE:
                 return new DetectivePhase(context);
 
-            case PhaseEnum.DOCTOR_PHASE:
+            case MafiaPhasesNameEnum.DOCTOR_PHASE:
                 return new DoctorPhase(context);
 
-            case PhaseEnum.DAY_PHASE:
+            case MafiaPhasesNameEnum.DAY_PHASE:
                 return new DayPhase(context);
 
-            case PhaseEnum.DISCUSS_PHASE:
+            case MafiaPhasesNameEnum.DISCUSS_PHASE:
                 return new DiscussPhase(context);
 
-            case PhaseEnum.VOTE_PHASE:
+            case MafiaPhasesNameEnum.VOTE_PHASE:
                 return new VotePhase(context);
         }
     }

@@ -24,7 +24,7 @@ class MafiaRoom extends Room {
         this.setState(new MafiaRoomState());
 
         // events
-        this.onMessage(MafiaRoomEnum.ACTION, (client, message) => this.state.gameState.action());
+        //this.onMessage(MafiaRoomEnum.ACTION, (client, message) => this.state.gameState.action());
         this.onMessage(MafiaRoomEnum.START, (client, message) => {
             try {
                 this.state.gameState.startGame(client)

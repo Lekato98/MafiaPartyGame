@@ -1,5 +1,5 @@
 import {defineTypes, Schema} from "@colyseus/schema";
-import {MafiaRolesEnum} from "../Utils/MafiaGameUtils";
+import {MafiaRolesEnum} from "../MafiaUtils/MafiaRolesUtils";
 
 export class Player extends Schema {
     private readonly sessionId: string;

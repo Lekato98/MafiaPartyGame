@@ -75,7 +75,7 @@
   }
 
   function resetBody() {
-    document.body.innerHTML = '<h1>Current AbstractPhase</h1>';
+    document.body.innerHTML = '<h1>Refresh</h1>';
   }
 
   function setStateName(state) {
@@ -86,7 +86,7 @@
   function setCurrentTurns(state) {
     const turns = document.querySelector('#turns');
     let template = '';
-    state.gameState.currentPhase.activeRolesForCurrentState.forEach(item => template += `${item}, `);
+    state.gameState.currentPhase.activeRoles.forEach(item => template += `${item}, `);
     turns.innerText = template;
   }
 
