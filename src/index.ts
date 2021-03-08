@@ -1,8 +1,8 @@
 import http from "http";
 
 import expressApp from "./app/expressApp";
-import ColyseusServer from "./utils/colyseusServer";
+import ColyseusServer from "./colyseus/ColyseusServer";
 
 const server = http.createServer(expressApp);
-const options = {server};
-const colyseusServer = ColyseusServer.create(options);
+const colyseusServerOptions = {server};
+const colyseusServer = ColyseusServer.create(colyseusServerOptions);

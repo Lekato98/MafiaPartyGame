@@ -1,10 +1,10 @@
-import {defineTypes, Schema} from "@colyseus/schema";
-import {MafiaRolesEnum} from "../MafiaUtils/MafiaRolesUtils";
+import {Schema, type} from "@colyseus/schema";
+import {MafiaRole} from "../MafiaUtils/MafiaRoleUtils";
 
 export class Player extends Schema {
-    private readonly sessionId: string;
-    private readonly username: string;
-    private role: MafiaRolesEnum;
+    @type('string') private readonly sessionId: string;
+    @type('string') private readonly username: string;
+    @type('string') private role: MafiaRole;
 
     constructor(sessionId: string, username: string) {
         super();
@@ -20,19 +20,13 @@ export class Player extends Schema {
         return this.username;
     }
 
-    setRole(role: MafiaRolesEnum): void {
+    setRole(role: MafiaRole): void {
         this.role = role;
     }
 
-    getRole(): MafiaRolesEnum {
+    getRole(): MafiaRole {
         return this.role;
     }
 }
-
-defineTypes(Player, {
-    sessionId: 'string',
-    username: 'string',
-    role: 'string'
-});
 
 export default Player;

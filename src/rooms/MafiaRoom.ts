@@ -1,8 +1,8 @@
 import * as http from 'http';
 import {Client, Room} from 'colyseus';
 import MafiaRoomState from "./Schema/MafiaRoomState";
-import {RoomsNameEnum} from "../utils/colyseusServer";
-import {CREATED, JOINED, LEFT, REMOVED} from "../utils/RoomLogs";
+import {RoomName} from "../colyseus/ColyseusServer";
+import LogsUtils from "../utils/LogsUtils";
 
 export enum MafiaRoomEnum {
     ERROR = 'ERROR',
@@ -17,15 +17,15 @@ class MafiaRoom extends Room {
     onCreate(options: any): void | Promise<any> {
 
         // configs
-        this.ROOM_NAME = `${RoomsNameEnum.MAFIA}#${this.roomId}`;
+        this.ROOM_NAME = `${RoomName.MAFIA}#${this.roomId}`;
         this.maxClients = 30;
 
         // state
         this.setState(new MafiaRoomState());
 
         // events
-        //this.onMessage(MafiaRoomEnum.ACTION, (client, message) => this.state.gameState.action());
-        this.onMessage(MafiaRoomEnum.START, (client, message) => {
+        this.onMessage(MafiaRoomEnum.ACTION, (client, message) => console.log('some action', client.sessionId, message));
+        this.onMessage(MafiaRoomEnum.START, (client) => {
             try {
                 this.state.gameState.startGame(client)
             } catch (err) {
@@ -33,7 +33,7 @@ class MafiaRoom extends Room {
             }
         });
 
-        CREATED(this.ROOM_NAME);
+        LogsUtils.CREATED(this.ROOM_NAME);
     }
 
     onAuth(client: Client, clientOptions: any, request?: http.IncomingMessage): any {
@@ -43,7 +43,7 @@ class MafiaRoom extends Room {
     onJoin(client: Client, clientOptions?: any, auth?: any): void | Promise<any> {
         try {
             this.state.join(client, clientOptions);
-            JOINED(this.ROOM_NAME);
+            LogsUtils.JOINED(this.ROOM_NAME);
         } catch (e) {
             client.leave(1001, e.message);
         }
@@ -51,11 +51,11 @@ class MafiaRoom extends Room {
 
     onLeave(client: Client, consented?: boolean): void | Promise<any> {
         this.state.leave(client);
-        LEFT(this.ROOM_NAME);
+        LogsUtils.LEFT(this.ROOM_NAME);
     }
 
     onDispose(): void | Promise<any> {
-        REMOVED(this.ROOM_NAME);
+        LogsUtils.REMOVED(this.ROOM_NAME);
     }
 }
 

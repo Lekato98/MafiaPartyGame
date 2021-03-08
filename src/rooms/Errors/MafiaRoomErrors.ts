@@ -1,49 +1,45 @@
-export enum MafiaRoomErrorsNameEnum {
-    ROOM_IS_FULL_ERROR = 'RoomIsFullError',
-    INVALID_NUMBER_OF_PLAYERS_ERROR = 'InvalidNumberOfPlayersError',
-    INVALID_CLIENT_TYPE_ERROR = 'InvalidClientTypeError',
+export enum RoomErrorName {
+    ROOM_IS_FULL = 'RoomIsFull',
+    INVALID_NUMBER_OF_PLAYERS = 'InvalidNumberOfPlayers',
+    INVALID_CLIENT_TYPE = 'InvalidClientType',
     GAME_ALREADY_STARTED = 'GameAlreadyStarted',
-}
-
-export enum MafiaRoomErrorsEnum {
-    ROOM_IS_FULL = 'ROOM IS FULL',
-    INVALID_NUMBER_OF_PLAYERS = 'INVALID NUMBER OF PLAYERS', // @TODO move to MafiaErrorsEnum
-    INVALID_CLIENT_TYPE = 'INVALID CLIENT TYPE',
-    GAME_ALREADY_STARTED = 'GAME ALREADY STARTED', // @TODO move to MafiaErrorsEnum
-    NOT_GAME_LEADER = 'ONLY GAME LEADER CAN START THE GAME!', // @TODO move to MafiaErrorsEnum
-}
-
-export enum MafiaErrorsNameEnum {
     INVALID_PHASE_NAME = 'InvalidPhaseName',
+    INVALID_PHASE_ACTION = 'InvalidPhaseAction',
 }
 
-export enum MafiaErrorsEnum {
+export enum RoomError {
+    ROOM_IS_FULL = 'ROOM IS FULL',
+    INVALID_NUMBER_OF_PLAYERS = 'INVALID NUMBER OF PLAYERS',
+    INVALID_CLIENT_TYPE = 'INVALID CLIENT TYPE',
+    GAME_ALREADY_STARTED = 'GAME ALREADY STARTED',
+    NOT_GAME_LEADER = 'ONLY GAME LEADER CAN START THE GAME!',
     UNKNOWN_PHASE_NAME = 'UNKNOWN PHASE NAME ',
+    INVALID_PHASE_ACTION = 'ACTION IS NOT INCLUDED IN THIS PHASE OR ITS INVALID',
 }
 
-export class RoomIsFullError extends Error {
+export class RoomIsFull extends Error {
     readonly code: number;
     readonly name: string;
 
     constructor(message?: string, code?: number) {
         super(message);
-        Object.setPrototypeOf(this, RoomIsFullError.prototype);
+        Object.setPrototypeOf(this, RoomIsFull.prototype);
 
         this.code = code;
-        this.name = MafiaRoomErrorsNameEnum.ROOM_IS_FULL_ERROR;
+        this.name = RoomErrorName.ROOM_IS_FULL;
     }
 }
 
-export class InvalidNumberOfPlayersError extends Error {
+export class InvalidNumberOfPlayers extends Error {
     readonly code: number;
     readonly name: string;
 
     constructor(message?: string, code?: number) {
         super(message);
-        Object.setPrototypeOf(this, InvalidNumberOfPlayersError.prototype);
+        Object.setPrototypeOf(this, InvalidNumberOfPlayers.prototype);
 
         this.code = code;
-        this.name = MafiaRoomErrorsNameEnum.INVALID_NUMBER_OF_PLAYERS_ERROR;
+        this.name = RoomErrorName.INVALID_NUMBER_OF_PLAYERS;
     }
 }
 
@@ -53,10 +49,10 @@ export class InvalidClientType extends Error {
 
     constructor(message?: string, code?: number) {
         super(message);
-        Object.setPrototypeOf(this, InvalidNumberOfPlayersError.prototype);
+        Object.setPrototypeOf(this, InvalidNumberOfPlayers.prototype);
 
         this.code = code;
-        this.name = MafiaRoomErrorsNameEnum.INVALID_CLIENT_TYPE_ERROR;
+        this.name = RoomErrorName.INVALID_CLIENT_TYPE;
     }
 }
 
@@ -69,7 +65,7 @@ export class GameAlreadyStarted extends Error {
         Object.setPrototypeOf(this, GameAlreadyStarted.prototype);
 
         this.code = code;
-        this.name = MafiaRoomErrorsNameEnum.GAME_ALREADY_STARTED;
+        this.name = RoomErrorName.GAME_ALREADY_STARTED;
     }
 }
 
@@ -82,6 +78,19 @@ export class InvalidPhaseName extends Error {
         Object.setPrototypeOf(this, InvalidPhaseName.prototype);
 
         this.code = code;
-        this.name = MafiaErrorsNameEnum.INVALID_PHASE_NAME;
+        this.name = RoomErrorName.INVALID_PHASE_NAME;
+    }
+}
+
+export class InvalidPhaseAction extends Error {
+    readonly code: number;
+    readonly name: string;
+
+    constructor(message?: string, code?: number) {
+        super(message);
+        Object.setPrototypeOf(this, InvalidPhaseName.prototype);
+
+        this.code = code;
+        this.name = RoomErrorName.INVALID_PHASE_ACTION;
     }
 }

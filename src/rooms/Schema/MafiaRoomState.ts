@@ -1,9 +1,9 @@
-import {ArraySchema, defineTypes, MapSchema, Schema} from "@colyseus/schema";
+import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema";
 import {Client} from "colyseus";
 import {Player} from "./Player";
 import {Spectator} from "./Spectator";
 import MafiaGameState from "./MafiaGameState";
-import {GameAlreadyStarted, InvalidClientType, MafiaRoomErrorsEnum, RoomIsFullError} from "../Errors/MafiaRoomErrors";
+import {GameAlreadyStarted, InvalidClientType, RoomError, RoomIsFull} from "../Errors/MafiaRoomErrors";
 
 export enum MafiaRoomStateEnum {
     PLAYER = 'PLAYER',
@@ -14,33 +14,32 @@ export enum MafiaRoomStateEnum {
     INITIAL_NUMBER_OF_PLAYERS = 0,
     INITIAL_NUMBER_OF_SPECTATORS = 0,
     DEFAULT_GAME_LEADER = '',
-    SKIP_PHASE_TIME = 0,
 }
 
 class MafiaRoomState extends Schema {
-    readonly maxNumberOfPlayers: number = MafiaRoomStateEnum.MAX_NUMBER_OF_PLAYERS;
-    readonly maxNumberOfSpectators: number = MafiaRoomStateEnum.MAX_NUMBER_OF_SPECTATORS;
+    @type('uint8') readonly maxNumberOfPlayers: number = MafiaRoomStateEnum.MAX_NUMBER_OF_PLAYERS;
+    @type('uint8') readonly maxNumberOfSpectators: number = MafiaRoomStateEnum.MAX_NUMBER_OF_SPECTATORS;
 
-    public gameState: MafiaGameState;
-    private players: ArraySchema<Player>;
-    private spectators: ArraySchema<Spectator>;
-    private numberOfPlayers: number;
-    private numberOfSpectators: number;
-    private clientJointType: MapSchema<string>; // key: sessionId -> value: jointType
+    @type(MafiaGameState) public gameState: MafiaGameState;
+    @type([Player]) private players: ArraySchema<Player>;
+    @type([Spectator]) private spectators: ArraySchema<Spectator>;
+    @type('uint8') private numberOfPlayers: number;
+    @type('uint8') private numberOfSpectators: number;
+    @type({map: 'string'}) private clientJointType: MapSchema<string>; // sessionId -> jointType
 
     constructor() {
         super();
         this.refreshMafiaRoomState();
     }
 
-    join(client: Client, clientOptions: any): void {
+    public join(client: Client, clientOptions: any): void {
         if (this.isFull(clientOptions.jointType)) {
-            throw new RoomIsFullError(MafiaRoomErrorsEnum.ROOM_IS_FULL);
+            throw new RoomIsFull(RoomError.ROOM_IS_FULL);
         } else {
             switch (clientOptions.jointType) {
                 case MafiaRoomStateEnum.PLAYER:
                     if (this.gameState.isGameStarted()) {
-                        throw new GameAlreadyStarted(MafiaRoomErrorsEnum.GAME_ALREADY_STARTED);
+                        throw new GameAlreadyStarted(RoomError.GAME_ALREADY_STARTED);
                     } else {
                         this.players.push(new Player(client.sessionId, clientOptions.username));
                         this.numberOfPlayers++;
@@ -58,41 +57,40 @@ class MafiaRoomState extends Schema {
         }
     }
 
-    leave(client: Client): void {
+    public leave(client: Client): void {
         const clientJointType = this.clientJointType.get(client.sessionId);
-        switch (clientJointType) {
-            case MafiaRoomStateEnum.PLAYER:
-                this.removeClient(this.players, client.sessionId);
-                this.numberOfPlayers--;
-                break;
 
-            case MafiaRoomStateEnum.SPECTATOR:
-                this.removeClient(this.spectators, client.sessionId);
-                this.numberOfSpectators--;
-                break;
+        if (clientJointType === MafiaRoomStateEnum.PLAYER) {
+            this.removeClient(this.players, client.sessionId);
+            this.numberOfPlayers--;
+        } else if (clientJointType === MafiaRoomStateEnum.SPECTATOR) {
+            this.removeClient(this.spectators, client.sessionId);
+            this.numberOfSpectators--;
+        } else {
+            throw new InvalidClientType(RoomError.INVALID_CLIENT_TYPE);
         }
 
         this.gameState.fixGameLeader();
     }
 
-    removeClient(clientsList: ArraySchema, sessionId: string): void {
+    public removeClient(clientsList: ArraySchema, sessionId: string): void {
         const IndexToRemove = clientsList.map(client => client.sessionId).indexOf(sessionId);
         this.clientJointType.delete(sessionId);
         clientsList.splice(IndexToRemove, 1);
     }
 
 
-    isFull(clientType: string): boolean {
+    public isFull(clientType: string): boolean {
         if (clientType === MafiaRoomStateEnum.PLAYER) {
             return this.numberOfPlayers === this.maxNumberOfPlayers;
         } else if (clientType === MafiaRoomStateEnum.SPECTATOR) {
             return this.numberOfSpectators === this.maxNumberOfSpectators;
         } else {
-            throw new InvalidClientType(MafiaRoomErrorsEnum.INVALID_CLIENT_TYPE);
+            throw new InvalidClientType(RoomError.INVALID_CLIENT_TYPE);
         }
     }
 
-    private refreshMafiaRoomState(): void {
+    public refreshMafiaRoomState(): void {
         this.players = new ArraySchema<Player>();
         this.gameState = new MafiaGameState(this.players);
         this.spectators = new ArraySchema<Spectator>();
@@ -101,16 +99,5 @@ class MafiaRoomState extends Schema {
         this.numberOfSpectators = MafiaRoomStateEnum.INITIAL_NUMBER_OF_SPECTATORS;
     }
 }
-
-defineTypes(MafiaRoomState, {
-    gameState: MafiaGameState,
-    players: [Player],
-    spectators: [Spectator],
-    clientJointType: {map: 'string'},
-    numberOfPlayers: 'int8',
-    numberOfSpectators: 'int8',
-    maxNumberOfPlayers: 'int8',
-    maxNumberOfSpectators: 'int8',
-});
 
 export default MafiaRoomState;

@@ -1,17 +1,18 @@
 import AbstractPhase from "./AbstractPhase";
 import MafiaGameState from "../MafiaGameState";
-import {MafiaPhasesNameEnum, MafiaPhasesTimeEnum} from "../../MafiaUtils/MafiaPhasesUtils";
+import {MafiaPhaseName, MafiaPhaseTime} from "../../MafiaUtils/MafiaPhaseUtils";
 
 class VotePhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
         super();
         this.context = context;
-        this.refreshVoteState();
+        this.refreshVotePhase();
     }
 
-    refreshVoteState(): void {
-        this.phaseName = MafiaPhasesNameEnum.VOTE_PHASE;
-        this.phaseTime = MafiaPhasesTimeEnum.VOTE_PHASE_TIME;
+    refreshVotePhase(): void {
+        this.phaseName = MafiaPhaseName.VOTE_PHASE;
+        this.phaseTime = MafiaPhaseTime.VOTE_PHASE_TIME;
+        this.setActiveActions();
         this.setActiveRoles();
     }
 }
