@@ -1,5 +1,5 @@
 import * as Colyseus from "colyseus";
-import MafiaRoom from "../rooms/MafiaRoom";
+import MafiaRoom from "../rooms/mafia-room/MafiaRoom";
 
 export enum RoomName {
     MAFIA = 'Mafia'

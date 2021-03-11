@@ -1,5 +1,5 @@
 import {MafiaRole} from "./MafiaRoleUtils";
-import {InvalidPhaseName, RoomError} from "../Errors/MafiaRoomErrors";
+import {InvalidPhaseName, RoomError} from "../errors/MafiaRoomErrors";
 import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaPhaseName {

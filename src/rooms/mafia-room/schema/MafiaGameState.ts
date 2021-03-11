@@ -1,15 +1,15 @@
 import {ArraySchema, Schema, type} from "@colyseus/schema";
 import {Client} from "colyseus";
-import AbstractPhase from "./MafiaPhases/AbstractPhase";
-import NightPhase from "./MafiaPhases/NightPhase";
-import MafiaRoleUtils, {MafiaRole} from "../MafiaUtils/MafiaRoleUtils";
-import Player from "./Player";
+import AbstractPhase from "./phases/AbstractPhase";
+import NightPhase from "./phases/NightPhase";
+import MafiaRoleUtils, {MafiaRole} from "../utils/MafiaRoleUtils";
+import MafiaPlayer from "./clients/MafiaPlayer";
 import {MafiaRoomEnum} from "../MafiaRoom";
-import {RoomError} from "../Errors/MafiaRoomErrors";
+import {RoomError} from "../errors/MafiaRoomErrors";
 import {MafiaRoomStateEnum} from "./MafiaRoomState";
-import MafiaSupportUtils from "../MafiaUtils/MafiaSupportUtils";
-import {MafiaPhaseName} from "../MafiaUtils/MafiaPhaseUtils";
-import PhasesFactory from "./MafiaPhases/PhaseFactory";
+import MafiaSupportUtils from "../utils/MafiaSupportUtils";
+import {MafiaPhaseName} from "../utils/MafiaPhaseUtils";
+import PhasesFactory from "./phases/PhaseFactory";
 
 class MafiaGameState extends Schema {
     // NIGHT -> MAFIA -> DET -> DOC -> DAY -> DISC -> VOTE -> NIGHT
@@ -17,9 +17,9 @@ class MafiaGameState extends Schema {
     @type(['string']) private rolesCollection: ArraySchema<MafiaRole>;
     @type('string') private gameLeader: string;
     @type('boolean') private gameStarted: boolean;
-    private players: ArraySchema<Player>;
+    readonly players: ArraySchema<MafiaPlayer>;
 
-    constructor(players: ArraySchema<Player>) {
+    constructor(players: ArraySchema<MafiaPlayer>) {
         super();
         this.players = players;
         this.refreshMafiaGameState();
@@ -33,16 +33,16 @@ class MafiaGameState extends Schema {
         } else {
             this.buildGameRoles();
             this.setGameStarted(true);
-            this.gameLifeCycle();
+            this.phasesLifeCycle();
         }
     }
 
-    public gameLifeCycle(): void | Promise<any> {
+    public phasesLifeCycle(): void | Promise<any> {
         const phaseTime: number = this.currentPhase.getPhaseTime() * MafiaRoomStateEnum.MILLISECOND;
 
         setTimeout(() => {
             this.currentPhase.goToNextPhase();
-            this.gameLifeCycle();
+            this.phasesLifeCycle();
         }, phaseTime);
     }
 
@@ -76,6 +76,15 @@ class MafiaGameState extends Schema {
 
     public isGameLeader(client: Client): boolean {
         return client.sessionId === this.gameLeader;
+    }
+
+    public getPlayerBySessionId(sessionId: string): MafiaPlayer {
+        const playerIndex: number = this.players.map(player => player.getSessionId()).indexOf(sessionId);
+        if (playerIndex === -1) {
+            throw new Error("UNKNOWN PLAYER");
+        } else {
+            return this.players[playerIndex];
+        }
     }
 
     public fixGameLeader(): void {

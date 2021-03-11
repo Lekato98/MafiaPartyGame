@@ -7,7 +7,7 @@
     "start": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test-mafia": "npx colyseus-loadtest test/MafiaRoom.test.ts --room Mafia --delay 25 --numClients 3000 --endpoint ws://localhost:4567",
-    "schema-gen": "schema-codegen src/rooms/Schema/MafiaRoomState.ts --output client-side/ --csharp"
+    "schema-gen": "schema-codegen src/rooms/mafia-room/schema/MafiaRoomState.ts --output client-side/ --csharp"
   },
   "author": "Hamza Farhan",
   "license": "ISC",

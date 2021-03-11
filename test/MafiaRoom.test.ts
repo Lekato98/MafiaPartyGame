@@ -1,6 +1,6 @@
 import { Room, Client } from "colyseus.js";
-import MafiaRoom from "../src/rooms/MafiaRoom";
-import MafiaRoomState from "../src/rooms/Schema/MafiaRoomState";
+import MafiaRoom from "../src/rooms/mafia-room/MafiaRoom";
+import MafiaRoomState from "../src/rooms/mafia-room/schema/MafiaRoomState";
 
 export function requestJoinOptions (this: Client, i: number): any {
     return { requestNumber: i, jointType: i % 2 ? 'SPECTATOR' : 'PLAYER', username: Math.random().toString() };

@@ -1,8 +1,8 @@
 import * as http from 'http';
 import {Client, Room} from 'colyseus';
-import MafiaRoomState from "./Schema/MafiaRoomState";
-import {RoomName} from "../colyseus/ColyseusServer";
-import LogsUtils from "../utils/LogsUtils";
+import MafiaRoomState from "./schema/MafiaRoomState";
+import {RoomName} from "../../colyseus/ColyseusServer";
+import LogsUtils from "../../utils/LogsUtils";
 
 export enum MafiaRoomEnum {
     ERROR = 'ERROR',
@@ -16,7 +16,7 @@ class MafiaRoom extends Room {
 
     onCreate(options: any): void | Promise<any> {
 
-        // configs
+        // configs & options
         this.ROOM_NAME = `${RoomName.MAFIA}#${this.roomId}`;
         this.maxClients = 30;
 

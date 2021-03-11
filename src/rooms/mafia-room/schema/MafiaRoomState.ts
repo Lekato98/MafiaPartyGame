@@ -1,9 +1,9 @@
 import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema";
 import {Client} from "colyseus";
-import {Player} from "./Player";
-import {Spectator} from "./Spectator";
+import {MafiaPlayer} from "./clients/MafiaPlayer";
+import {MafiaSpectator} from "./clients/MafiaSpectator";
 import MafiaGameState from "./MafiaGameState";
-import {GameAlreadyStarted, InvalidClientType, RoomError, RoomIsFull} from "../Errors/MafiaRoomErrors";
+import {GameAlreadyStarted, InvalidClientType, RoomError, RoomIsFull} from "../errors/MafiaRoomErrors";
 
 export enum MafiaRoomStateEnum {
     PLAYER = 'PLAYER',
@@ -21,8 +21,8 @@ class MafiaRoomState extends Schema {
     @type('uint8') readonly maxNumberOfSpectators: number = MafiaRoomStateEnum.MAX_NUMBER_OF_SPECTATORS;
 
     @type(MafiaGameState) public gameState: MafiaGameState;
-    @type([Player]) private players: ArraySchema<Player>;
-    @type([Spectator]) private spectators: ArraySchema<Spectator>;
+    @type([MafiaPlayer]) private players: ArraySchema<MafiaPlayer>;
+    @type([MafiaSpectator]) private spectators: ArraySchema<MafiaSpectator>;
     @type('uint8') private numberOfPlayers: number;
     @type('uint8') private numberOfSpectators: number;
     @type({map: 'string'}) private clientJointType: MapSchema<string>; // sessionId -> jointType
@@ -41,14 +41,14 @@ class MafiaRoomState extends Schema {
                     if (this.gameState.isGameStarted()) {
                         throw new GameAlreadyStarted(RoomError.GAME_ALREADY_STARTED);
                     } else {
-                        this.players.push(new Player(client.sessionId, clientOptions.username));
+                        this.players.push(new MafiaPlayer(client.sessionId, clientOptions.username));
                         this.numberOfPlayers++;
                         this.gameState.fixGameLeader();
                     }
                     break;
 
                 case MafiaRoomStateEnum.SPECTATOR:
-                    this.spectators.push(new Spectator(client.sessionId, clientOptions.username));
+                    this.spectators.push(new MafiaSpectator(client.sessionId, clientOptions.username));
                     this.numberOfSpectators++;
                     break;
             }
@@ -91,9 +91,9 @@ class MafiaRoomState extends Schema {
     }
 
     public refreshMafiaRoomState(): void {
-        this.players = new ArraySchema<Player>();
+        this.players = new ArraySchema<MafiaPlayer>();
         this.gameState = new MafiaGameState(this.players);
-        this.spectators = new ArraySchema<Spectator>();
+        this.spectators = new ArraySchema<MafiaSpectator>();
         this.clientJointType = new MapSchema<string>();
         this.numberOfPlayers = MafiaRoomStateEnum.INITIAL_NUMBER_OF_PLAYERS;
         this.numberOfSpectators = MafiaRoomStateEnum.INITIAL_NUMBER_OF_SPECTATORS;

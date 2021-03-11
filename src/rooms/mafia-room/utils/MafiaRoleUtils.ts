@@ -1,4 +1,4 @@
-import {InvalidNumberOfPlayers, RoomError} from "../Errors/MafiaRoomErrors";
+import {InvalidNumberOfPlayers, RoomError} from "../errors/MafiaRoomErrors";
 import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaRole {

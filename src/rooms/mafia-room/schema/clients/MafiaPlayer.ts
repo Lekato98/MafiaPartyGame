@@ -1,7 +1,7 @@
 import {Schema, type} from "@colyseus/schema";
-import {MafiaRole} from "../MafiaUtils/MafiaRoleUtils";
+import {MafiaRole} from "../../utils/MafiaRoleUtils";
 
-export class Player extends Schema {
+export class MafiaPlayer extends Schema {
     @type('string') private readonly sessionId: string;
     @type('string') private readonly username: string;
     @type('string') private role: MafiaRole;
@@ -29,4 +29,4 @@ export class Player extends Schema {
     }
 }
 
-export default Player;
+export default MafiaPlayer;

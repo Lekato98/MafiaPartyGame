@@ -1,6 +1,6 @@
 import {Schema, type} from "@colyseus/schema";
 
-export class Spectator extends Schema {
+export class MafiaSpectator extends Schema {
     @type('string') private readonly sessionId: string;
     @type('string') private readonly username: string;
 
@@ -19,4 +19,4 @@ export class Spectator extends Schema {
     }
 }
 
-export default Spectator;
+export default MafiaSpectator;
