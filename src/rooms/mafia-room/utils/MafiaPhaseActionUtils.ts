@@ -8,7 +8,7 @@ export enum MafiaPhaseAction {
     MESSAGE_TO_DEAD,
     MAFIA_KILL_VOTE,
     DOCTOR_PROTECT_ONE,
-    DETECTIVE_DETECT_VOTE,
+    DETECTOR_DETECT_ONE,
     INNOCENT_VOTE, // @TODO add new Defense Phase
     GUILTY_VOTE
 }
@@ -27,7 +27,7 @@ class MafiaPhaseActionUtils {
     ];
 
     public static readonly ACTIVE_ACTIONS_DETECTIVE: Array<MafiaPhaseAction> = [
-        MafiaPhaseAction.DETECTIVE_DETECT_VOTE,
+        MafiaPhaseAction.DETECTOR_DETECT_ONE,
     ];
 
     public static readonly ACTIVE_ACTIONS_DOCTOR: Array<MafiaPhaseAction> = [

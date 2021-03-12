@@ -12,10 +12,10 @@
 </h1>
 <div id='startBtn'></div>
 <div id='state'></div>
-
 <div id='turns'></div>
-
 <div id='time'></div>
+<button id="action">Do Action</button>
+
 <script>
   let room = '';
 
@@ -25,7 +25,16 @@
     room = await client.joinOrCreate('Mafia',
         {username: 'lee', jointType: 'PLAYER'});
 
+    const actionBtn = document.querySelector('#action');
+    actionBtn.addEventListener('click', (e) => {
+      // room.send('ACTION', { actionName: 5, protectPlayerId: 'a' })
+      const detectPlayerId = window.prompt('sessionId: ');
+      room.send('ACTION', { actionName: 6, detectPlayerId })
+    })
+
     room.onMessage('ERROR', (message) => alert(message));
+    room.onMessage('DETECTIVE_RESULT', (message => alert(JSON.stringify(message, null, 2))));
+
     room.onLeave((code, message) => {
       switch (code) {
         case 1006:

@@ -1,12 +1,12 @@
-import {ArraySchema, Schema} from "@colyseus/schema";
-import IActions from "./IActions";
+import {ArraySchema, type} from "@colyseus/schema";
+import AbstractActions from "./AbstractActions";
 import {InvalidPhaseAction, RoomError} from "../../errors/MafiaRoomErrors";
 import {Client} from "colyseus";
 import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
 import MafiaPlayer from "../clients/MafiaPlayer";
 
-class DoctorActions extends Schema implements IActions {
-    private protectedPlayer: string;
+class DoctorActions extends AbstractActions {
+    @type('string') protectedPlayer: string;
 
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
@@ -16,27 +16,28 @@ class DoctorActions extends Schema implements IActions {
     public doAction(client: Client, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.DOCTOR_PROTECT_ONE:
-                this.protectAction(client, payload.player);
+                this.protectAction(client, payload.protectPlayerId);
                 break;
             default:
                 throw new InvalidPhaseAction(RoomError.INVALID_PHASE_ACTION);
         }
     }
 
-    public protectAction(client: Client, playerId: string): void {
-        if (this.isDoctorProtectingHimself(client, playerId)) {
+    public protectAction(client: Client, protectSessionId: string): void {
+        if (this.isDoctorProtectingHimself(client.sessionId, protectSessionId)) {
             throw new InvalidPhaseAction(RoomError.DOCTOR_PROTECT_HIMSELF);
         } else {
-            this.setProtectedPlayer(playerId);
+            this.setProtectedPlayer(protectSessionId);
         }
     }
 
     public setProtectedPlayer(protectedPlayer: string): void {
+        console.log(protectedPlayer);
         this.protectedPlayer = protectedPlayer;
     }
 
-    public isDoctorProtectingHimself(client: Client, playerId: string): boolean {
-        return client.sessionId === playerId;
+    public isDoctorProtectingHimself(sessionId: string, playerId: string): boolean {
+        return sessionId === playerId;
     }
 }
 

@@ -1,12 +1,13 @@
 import {ArraySchema} from "@colyseus/schema";
 import MafiaPlayer from "../clients/MafiaPlayer";
-import {MafiaActionsName} from "./IActions";
+import {MafiaActionsName} from "./AbstractActions";
 import DetectiveActions from "./DetectiveActions";
 import DiscussActions from "./DiscussActions";
 import DoctorActions from "./DoctorActions";
 import VoteActions from "./VoteActions";
 import MafiaActions from "./MafiaActions";
 import {InvalidPhaseAction, RoomError} from "../../errors/MafiaRoomErrors";
+import ModeratorActions from "./ModeratorActions";
 
 abstract class ActionsFactory {
     public static createActions(action: MafiaActionsName, players: ArraySchema<MafiaPlayer>) {
@@ -25,6 +26,9 @@ abstract class ActionsFactory {
 
             case MafiaActionsName.VOTE_ACTIONS:
                 return new VoteActions(players);
+
+            case MafiaActionsName.MODERATOR_ACTIONS:
+                return new ModeratorActions(players);
 
             default:
                 throw new InvalidPhaseAction(RoomError.UNKNOWN_ACTION_NAME);

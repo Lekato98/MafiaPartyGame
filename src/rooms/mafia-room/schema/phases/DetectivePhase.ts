@@ -1,8 +1,7 @@
 import AbstractPhase from "./AbstractPhase";
 import MafiaGameState from "../MafiaGameState";
 import {MafiaPhaseName, MafiaPhaseTime} from "../../utils/MafiaPhaseUtils";
-import ActionsFactory from "../actions/ActionsFactory";
-import {MafiaActionsName} from "../actions/IActions";
+import {MafiaActionsName} from "../actions/AbstractActions";
 
 class DetectivePhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
@@ -13,7 +12,7 @@ class DetectivePhase extends AbstractPhase {
     refreshDetectivePhase(): void {
         this.phaseName = MafiaPhaseName.DETECTIVE_PHASE;
         this.phaseTime = MafiaPhaseTime.DETECTIVE_PHASE_TIME;
-        this.actions = ActionsFactory.createActions(MafiaActionsName.DETECTIVE_ACTIONS, this.context.players);
+        this.actionsName = MafiaActionsName.DETECTIVE_ACTIONS;
         this.refreshPhase();
     }
 }

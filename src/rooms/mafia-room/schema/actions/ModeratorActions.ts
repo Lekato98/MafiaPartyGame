@@ -4,7 +4,7 @@ import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
 import {Client} from "colyseus";
 import MafiaPlayer from "../clients/MafiaPlayer";
 
-class MafiaActions extends AbstractActions {
+class ModeratorActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
     }
@@ -13,4 +13,4 @@ class MafiaActions extends AbstractActions {
     }
 }
 
-export default MafiaActions;
+export default ModeratorActions;

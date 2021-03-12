@@ -3,6 +3,7 @@ import {Client, Room} from 'colyseus';
 import MafiaRoomState from "./schema/MafiaRoomState";
 import {RoomName} from "../../colyseus/ColyseusServer";
 import LogsUtils from "../../utils/LogsUtils";
+import {MafiaPhaseAction} from "./utils/MafiaPhaseActionUtils";
 
 export enum MafiaRoomEnum {
     ERROR = 'ERROR',
@@ -10,12 +11,15 @@ export enum MafiaRoomEnum {
     START = 'START',
 }
 
+interface IActionName {
+    actionName: MafiaPhaseAction,
+}
+
 class MafiaRoom extends Room {
     public state: MafiaRoomState;
     private ROOM_NAME: string;
 
     onCreate(options: any): void | Promise<any> {
-
         // configs & options
         this.ROOM_NAME = `${RoomName.MAFIA}#${this.roomId}`;
         this.maxClients = 30;
@@ -24,7 +28,11 @@ class MafiaRoom extends Room {
         this.setState(new MafiaRoomState());
 
         // events
-        this.onMessage(MafiaRoomEnum.ACTION, (client, message) => console.log('some action', client.sessionId, message));
+        this.onMessage(MafiaRoomEnum.ACTION, (client: Client, message: IActionName) => {
+            console.log('Do Action');
+            this.state.gameState.currentPhase.doAction(client, message.actionName, message);
+        });
+
         this.onMessage(MafiaRoomEnum.START, (client) => {
             try {
                 this.state.gameState.startGame(client)

@@ -10,18 +10,17 @@ import {MafiaRoomStateEnum} from "./MafiaRoomState";
 import MafiaSupportUtils from "../utils/MafiaSupportUtils";
 import {MafiaPhaseName} from "../utils/MafiaPhaseUtils";
 import PhasesFactory from "./phases/PhaseFactory";
+// NIGHT -> MAFIA -> DET -> DOC -> DAY -> DISC -> VOTE -> NIGHT
 
 class MafiaGameState extends Schema {
-    // NIGHT -> MAFIA -> DET -> DOC -> DAY -> DISC -> VOTE -> NIGHT
-    @type(AbstractPhase) private currentPhase: AbstractPhase;
-    @type(['string']) private rolesCollection: ArraySchema<MafiaRole>;
-    @type('string') private gameLeader: string;
-    @type('boolean') private gameStarted: boolean;
-    readonly players: ArraySchema<MafiaPlayer>;
+    @type(AbstractPhase) public currentPhase: AbstractPhase;
+    @type('string') public gameLeader: string;
+    @type('boolean') public gameStarted: boolean;
+    public rolesCollection: ArraySchema<MafiaRole>;
+    public phaseTimeout:  NodeJS.Timeout;
 
-    constructor(players: ArraySchema<MafiaPlayer>) {
+    constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
-        this.players = players;
         this.refreshMafiaGameState();
     }
 
@@ -37,10 +36,9 @@ class MafiaGameState extends Schema {
         }
     }
 
-    public phasesLifeCycle(): void | Promise<any> {
+    public phasesLifeCycle(): void {
         const phaseTime: number = this.currentPhase.getPhaseTime() * MafiaRoomStateEnum.MILLISECOND;
-
-        setTimeout(() => {
+        this.phaseTimeout = setTimeout(() => {
             this.currentPhase.goToNextPhase();
             this.phasesLifeCycle();
         }, phaseTime);

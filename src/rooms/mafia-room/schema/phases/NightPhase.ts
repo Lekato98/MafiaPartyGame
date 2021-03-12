@@ -1,6 +1,7 @@
 import AbstractPhase from "./AbstractPhase";
 import MafiaGameState from "../MafiaGameState";
 import {MafiaPhaseName, MafiaPhaseTime} from "../../utils/MafiaPhaseUtils";
+import {MafiaActionsName} from "../actions/AbstractActions";
 
 class NightPhase extends AbstractPhase {
 
@@ -12,6 +13,7 @@ class NightPhase extends AbstractPhase {
     refreshNightPhase() {
         this.phaseName = MafiaPhaseName.NIGHT_PHASE;
         this.phaseTime = MafiaPhaseTime.NIGHT_PHASE_TIME;
+        this.actionsName = MafiaActionsName.MODERATOR_ACTIONS;
         this.refreshPhase();
     }
 }

@@ -1,10 +1,10 @@
-import {ArraySchema, Schema} from "@colyseus/schema";
-import IActions from "./IActions";
+import {ArraySchema} from "@colyseus/schema";
+import AbstractActions from "./AbstractActions";
 import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
 import {Client} from "colyseus";
 import MafiaPlayer from "../clients/MafiaPlayer";
 
-class VoteActions extends Schema implements IActions {
+class VoteActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
     }
