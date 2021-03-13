@@ -1,5 +1,5 @@
 import {MafiaRole} from "./MafiaRoleUtils";
-import {InvalidPhaseName, RoomError} from "../errors/MafiaRoomErrors";
+import {InvalidPhaseName, RoomErrorMessages} from "../errors/MafiaRoomErrors";
 import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaPhaseName {
@@ -14,9 +14,9 @@ export enum MafiaPhaseName {
 
 export enum MafiaPhaseTime { // time in seconds
     NIGHT_PHASE_TIME = 3,
-    MAFIA_PHASE_TIME = 6,
+    MAFIA_PHASE_TIME = 15,
     DETECTIVE_PHASE_TIME = 15,
-    DOCTOR_PHASE_TIME = 6,
+    DOCTOR_PHASE_TIME = 15,
     DAY_PHASE_TIME = 3,
     DISCUSS_PHASE_TIME = 6,
     VOTE_PHASE_TIME = 6,
@@ -140,7 +140,7 @@ abstract class MafiaPhaseUtils {
                 return this.getActiveRolesVotePhase();
 
             default:
-                throw new InvalidPhaseName(RoomError.UNKNOWN_PHASE_NAME);
+                throw new InvalidPhaseName(RoomErrorMessages.UNKNOWN_PHASE_NAME);
         }
     }
 

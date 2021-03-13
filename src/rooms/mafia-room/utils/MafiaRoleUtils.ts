@@ -1,4 +1,4 @@
-import {InvalidNumberOfPlayers, RoomError} from "../errors/MafiaRoomErrors";
+import {InvalidNumberOfPlayers, RoomErrorMessages} from "../errors/MafiaRoomErrors";
 import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaRole {
@@ -55,7 +55,7 @@ abstract class MafiaRoleUtils {
 
             return this.getGameRolesCollection(numberOfEachRole);
         } else {
-            throw new InvalidNumberOfPlayers(RoomError.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -82,7 +82,7 @@ abstract class MafiaRoleUtils {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             return Math.floor(numberOfPlayers * MafiaGame.STANDARD_PERCENTAGE_FOR_MAFIA);
         } else {
-            throw new InvalidNumberOfPlayers(RoomError.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -91,7 +91,7 @@ abstract class MafiaRoleUtils {
             const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
             return numberOfMafia - MafiaGame.STANDARD_DIFFERENCE_BETWEEN_MAFIA_AND_DETECTIVES;
         } else {
-            throw new InvalidNumberOfPlayers(RoomError.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -99,7 +99,7 @@ abstract class MafiaRoleUtils {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             return Number(MafiaGame.STANDARD_NUMBER_OF_DOCTORS);
         } else {
-            throw new InvalidNumberOfPlayers(RoomError.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -110,7 +110,7 @@ abstract class MafiaRoleUtils {
             const numberOfDoctors = this.getNumberOfDoctors(numberOfPlayers);
             return numberOfPlayers - numberOfMafia - numberOfDetectives - numberOfDoctors;
         } else {
-            throw new InvalidNumberOfPlayers(RoomError.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 

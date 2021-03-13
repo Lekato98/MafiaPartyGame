@@ -10,11 +10,11 @@ export class MafiaSpectator extends Schema {
         this.username = username;
     }
 
-    getSessionId(): string {
+    public getSessionId(): string {
         return this.sessionId;
     }
 
-    getUsername(): string {
+    public getUsername(): string {
         return this.username;
     }
 }

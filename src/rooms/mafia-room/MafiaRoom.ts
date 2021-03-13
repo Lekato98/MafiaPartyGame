@@ -5,10 +5,17 @@ import {RoomName} from "../../colyseus/ColyseusServer";
 import LogsUtils from "../../utils/LogsUtils";
 import {MafiaPhaseAction} from "./utils/MafiaPhaseActionUtils";
 
-export enum MafiaRoomEnum {
+export enum MafiaRoomMessageType {
     ERROR = 'ERROR',
     ACTION = 'ACTION',
     START = 'START',
+    MODERATOR = 'MODERATOR',
+}
+
+export enum MafiaRoomMessage {
+    MAFIA_TO_KILL = 'Who do you want to kill?',
+    DOCTOR_TO_PROTECT = 'Who do you want to save?',
+    DETECTOR_TO_DETECT = 'Who do you want to know about?',
 }
 
 interface IActionName {
@@ -16,8 +23,8 @@ interface IActionName {
 }
 
 class MafiaRoom extends Room {
-    public state: MafiaRoomState;
     private ROOM_NAME: string;
+    public state: MafiaRoomState;
 
     onCreate(options: any): void | Promise<any> {
         // configs & options
@@ -28,16 +35,19 @@ class MafiaRoom extends Room {
         this.setState(new MafiaRoomState());
 
         // events
-        this.onMessage(MafiaRoomEnum.ACTION, (client: Client, message: IActionName) => {
-            console.log('Do Action');
-            this.state.gameState.currentPhase.doAction(client, message.actionName, message);
+        this.onMessage(MafiaRoomMessageType.ACTION, (client: Client, message: IActionName) => {
+            try {
+                this.state.gameState.phase.doAction(client, message.actionName, message);
+            } catch (err) {
+                client.send(MafiaRoomMessageType.ERROR, err.message);
+            }
         });
 
-        this.onMessage(MafiaRoomEnum.START, (client) => {
+        this.onMessage(MafiaRoomMessageType.START, (client: Client) => {
             try {
                 this.state.gameState.startGame(client)
             } catch (err) {
-                client.send(MafiaRoomEnum.ERROR, err.message);
+                client.send(MafiaRoomMessageType.ERROR, err.message);
             }
         });
 

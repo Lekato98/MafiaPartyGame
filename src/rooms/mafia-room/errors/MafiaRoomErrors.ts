@@ -5,9 +5,10 @@ export enum RoomErrorName {
     GAME_ALREADY_STARTED = 'GameAlreadyStarted',
     INVALID_PHASE_NAME = 'InvalidPhaseName',
     INVALID_PHASE_ACTION = 'InvalidPhaseAction',
+    ROOM_ERROR = 'RoomError',
 }
 
-export enum RoomError {
+export enum RoomErrorMessages {
     ROOM_IS_FULL = 'ROOM IS FULL',
     INVALID_NUMBER_OF_PLAYERS = 'INVALID NUMBER OF PLAYERS',
     INVALID_CLIENT_TYPE = 'INVALID CLIENT TYPE',
@@ -18,6 +19,24 @@ export enum RoomError {
     INVALID_PHASE_ACTION = 'ACTION IS NOT INCLUDED IN THIS PHASE OR ITS INVALID',
     DOCTOR_PROTECT_HIMSELF = 'DOCTOR TRYING TO PROTECT HIMSELF',
     DETECTOR_DETECT_HIMSELF = 'DETECTOR TRYING TO DETECT HIMSELF',
+    MAFIA_KILL_HIMSELF = 'MAFIA TRYING TO KILL HIMSELF',
+    HAS_REACH_ACTION_LIMITS = 'HAS REACH ACTION LIMITS',
+    INVALID_ROLE_ACTION_CALL = 'ROLE IS INVALID TO CALL CURRENT ACTION',
+    UNKNOWN_PLAYER = 'UNKNOWN PLAYER',
+    ACTION_ON_UNKNOWN_PLAYER = 'TRYING TO DO SOMETHING TO UNKNOWN PLAYER',
+}
+
+export class RoomError extends Error {
+    readonly code: number;
+    readonly name: string;
+
+    constructor(message?: string, code?: number) {
+        super(message);
+        Object.setPrototypeOf(this, RoomIsFull.prototype);
+
+        this.code = code;
+        this.name = RoomErrorName.ROOM_ERROR;
+    }
 }
 
 export class RoomIsFull extends Error {

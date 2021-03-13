@@ -3,7 +3,7 @@ import {Client} from "colyseus";
 import {MafiaPlayer} from "./clients/MafiaPlayer";
 import {MafiaSpectator} from "./clients/MafiaSpectator";
 import MafiaGameState from "./MafiaGameState";
-import {GameAlreadyStarted, InvalidClientType, RoomError, RoomIsFull} from "../errors/MafiaRoomErrors";
+import {GameAlreadyStarted, InvalidClientType, RoomErrorMessages, RoomIsFull} from "../errors/MafiaRoomErrors";
 
 export enum MafiaRoomStateEnum {
     PLAYER = 'PLAYER',
@@ -34,14 +34,14 @@ class MafiaRoomState extends Schema {
 
     public join(client: Client, clientOptions: any): void {
         if (this.isFull(clientOptions.jointType)) {
-            throw new RoomIsFull(RoomError.ROOM_IS_FULL);
+            throw new RoomIsFull(RoomErrorMessages.ROOM_IS_FULL);
         } else {
             switch (clientOptions.jointType) {
                 case MafiaRoomStateEnum.PLAYER:
                     if (this.gameState.isGameStarted()) {
-                        throw new GameAlreadyStarted(RoomError.GAME_ALREADY_STARTED);
+                        throw new GameAlreadyStarted(RoomErrorMessages.GAME_ALREADY_STARTED);
                     } else {
-                        this.players.push(new MafiaPlayer(client.sessionId, clientOptions.username));
+                        this.players.push(new MafiaPlayer(client, clientOptions.username));
                         this.numberOfPlayers++;
                         this.gameState.fixGameLeader();
                     }
@@ -67,7 +67,7 @@ class MafiaRoomState extends Schema {
             this.removeClient(this.spectators, client.sessionId);
             this.numberOfSpectators--;
         } else {
-            throw new InvalidClientType(RoomError.INVALID_CLIENT_TYPE);
+            throw new InvalidClientType(RoomErrorMessages.INVALID_CLIENT_TYPE);
         }
 
         this.gameState.fixGameLeader();
@@ -86,11 +86,11 @@ class MafiaRoomState extends Schema {
         } else if (clientType === MafiaRoomStateEnum.SPECTATOR) {
             return this.numberOfSpectators === this.maxNumberOfSpectators;
         } else {
-            throw new InvalidClientType(RoomError.INVALID_CLIENT_TYPE);
+            throw new InvalidClientType(RoomErrorMessages.INVALID_CLIENT_TYPE);
         }
     }
 
-    public refreshMafiaRoomState(): void {
+    refreshMafiaRoomState(): void {
         this.players = new ArraySchema<MafiaPlayer>();
         this.gameState = new MafiaGameState(this.players);
         this.spectators = new ArraySchema<MafiaSpectator>();

@@ -6,7 +6,7 @@ import DiscussActions from "./DiscussActions";
 import DoctorActions from "./DoctorActions";
 import VoteActions from "./VoteActions";
 import MafiaActions from "./MafiaActions";
-import {InvalidPhaseAction, RoomError} from "../../errors/MafiaRoomErrors";
+import {InvalidPhaseAction, RoomErrorMessages} from "../../errors/MafiaRoomErrors";
 import ModeratorActions from "./ModeratorActions";
 
 abstract class ActionsFactory {
@@ -31,7 +31,7 @@ abstract class ActionsFactory {
                 return new ModeratorActions(players);
 
             default:
-                throw new InvalidPhaseAction(RoomError.UNKNOWN_ACTION_NAME);
+                throw new InvalidPhaseAction(RoomErrorMessages.UNKNOWN_ACTION_NAME);
         }
     }
 }
