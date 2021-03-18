@@ -10,13 +10,17 @@ class MafiaPhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
         super();
         this.refreshMafiaPhase();
-        this.onBegin();
     }
 
     public onBegin() {
         this.context.players.forEach((player: MafiaPlayer) => player.getRole() === MafiaRole.MAFIA
             && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.MAFIA_TO_KILL)
         );
+    }
+
+    public onEnd(): void {
+        const results: Array<any> = this.actions.getResult();
+        this.context.phaseActions.push(...results);
     }
 
     refreshMafiaPhase(): void {

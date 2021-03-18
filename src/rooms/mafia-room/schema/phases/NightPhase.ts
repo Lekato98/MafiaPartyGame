@@ -10,6 +10,10 @@ class NightPhase extends AbstractPhase {
         this.refreshNightPhase();
     }
 
+    public onBegin(): void {
+        this.context.phaseActions.clear();
+    }
+
     refreshNightPhase() {
         this.phaseName = MafiaPhaseName.NIGHT_PHASE;
         this.phaseTime = MafiaPhaseTime.NIGHT_PHASE_TIME;

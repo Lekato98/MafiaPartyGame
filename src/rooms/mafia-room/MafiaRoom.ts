@@ -1,9 +1,9 @@
 import * as http from 'http';
-import {Client, Room} from 'colyseus';
-import MafiaRoomState from "./schema/MafiaRoomState";
-import {RoomName} from "../../colyseus/ColyseusServer";
-import LogsUtils from "../../utils/LogsUtils";
-import {MafiaPhaseAction} from "./utils/MafiaPhaseActionUtils";
+import { Client, Room } from 'colyseus';
+import MafiaRoomState from './schema/MafiaRoomState';
+import { RoomName } from '../../colyseus/ColyseusServer';
+import LogsUtils from '../../utils/LogsUtils';
+import { MafiaPhaseAction } from './utils/MafiaPhaseActionUtils';
 
 export enum MafiaRoomMessageType {
     ERROR = 'ERROR',
@@ -16,6 +16,7 @@ export enum MafiaRoomMessage {
     MAFIA_TO_KILL = 'Who do you want to kill?',
     DOCTOR_TO_PROTECT = 'Who do you want to save?',
     DETECTOR_TO_DETECT = 'Who do you want to know about?',
+    YOU_WERE_KILLED = 'Mafia Killed You ...'
 }
 
 interface IActionName {
@@ -28,7 +29,7 @@ class MafiaRoom extends Room {
 
     onCreate(options: any): void | Promise<any> {
         // configs & options
-        this.ROOM_NAME = `${RoomName.MAFIA}#${this.roomId}`;
+        this.ROOM_NAME = `${ RoomName.MAFIA }#${ this.roomId }`;
         this.maxClients = 30;
 
         // state
@@ -45,7 +46,7 @@ class MafiaRoom extends Room {
 
         this.onMessage(MafiaRoomMessageType.START, (client: Client) => {
             try {
-                this.state.gameState.startGame(client)
+                this.state.gameState.startGame(client);
             } catch (err) {
                 client.send(MafiaRoomMessageType.ERROR, err.message);
             }

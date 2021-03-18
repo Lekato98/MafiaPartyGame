@@ -10,13 +10,17 @@ class DoctorPhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
         super();
         this.refreshDoctorPhase();
-        this.onBegin();
     }
 
-    public onBegin() {
+    public onBegin(): void {
         this.context.players.forEach((player: MafiaPlayer) => player.getRole() === MafiaRole.DOCTOR
             && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.DOCTOR_TO_PROTECT)
         );
+    }
+
+    public onEnd(): void {
+        const results: Array<any> = this.actions.getResult();
+        this.context.phaseActions.push(...results);
     }
 
     refreshDoctorPhase(): void {

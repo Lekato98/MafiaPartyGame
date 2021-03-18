@@ -1,152 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <script src="https://unpkg.com/colyseus.js@^0.14.0/dist/colyseus.js"></script>
-
     <title>Title</title>
 </head>
+
 <body>
-<h1>
-    current turns
-</h1>
+
+<h1> current turns</h1>
 <div id='role' style="color:red"></div>
 <div id='startBtn'></div>
 <div id='state'></div>
 <div id='turns'></div>
 <div id='time'></div>
+<div id='players'></div>
 <button id="action">Do Action</button>
 
 <script>
-  let room = '';
-  const actionBtn = document.querySelector('#action');
+    let room = '';
+    const actionBtn = document.querySelector('#action');
 
-  function voteKillAction(event) {
-    const voteKillPlayerId = window.prompt('sessionId: ');
-    room.send('ACTION', {actionName: 4, voteKillPlayerId});
-  }
-
-  function detectAction(event) {
-    const detectPlayerId = window.prompt('sessionId: ');
-    room.send('ACTION', {actionName: 6, detectPlayerId});
-  }
-
-  function protectAction(event) {
-    const protectPlayerId = window.prompt('sessionId: ');
-    room.send('ACTION', {actionName: 5, protectPlayerId});
-  }
-
-  async function createClient() {
-    const endPoint = 'ws://localhost:4567';
-    const client = new Colyseus.Client(endPoint);
-    room = await client.joinOrCreate('Mafia',
-        {username: 'lee', jointType: 'PLAYER'});
-
-    room.onMessage('ERROR', (message) => alert(message));
-    room.onMessage('DETECTIVE_RESULT', (message => alert(JSON.stringify(message, null, 2))));
-    room.onMessage('MODERATOR', (message => alert(message)));
-
-    room.onLeave((code, message) => {
-      switch (code) {
-        case 1006:
-          alert('Server Offline!\n code: ' + code);
-          break;
-
-        case 1016:
-          alert(`${message}!\n code: ` + code);
-          break;
-      }
-
-      resetBody();
-    });
-    room.onStateChange.once((state) => {
-      console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
-      if (state.gameState.gameLeader === room.sessionId) {
-        setGameLeader();
-      }
-      setStateName(state);
-      setCurrentTurns(state);
-      if (state.gameState.gameStarted)
-        setCurrentTime(state);
-    });
-
-    room.onStateChange((state) => {
-      console.log('update: ', JSON.stringify(state.players, null, 2));
-      if (state.gameState.gameLeader === room.sessionId) {
-        setGameLeader();
-      }
-
-      setMyRole(state);
-      setStateName(state);
-      setCurrentTurns(state);
-      if (state.gameState.gameStarted)
-        setCurrentTime(state);
-      // console.log(`Updated state: ${JSON.stringify(state, null, 2)}`);
-    });
-
-    room.onError(err => console.error(err));
-    // setInterval(() => room.send('ACTION'), 2000);
-  }
-
-  function setMyRole(state) {
-    const roleDiv = document.querySelector('#role');
-    const myRole = state.players.filter(player => player.sessionId === room.sessionId)[0].role;
-    roleDiv.innerText = myRole || 'No Roles Yet!';
-  }
-
-  function setGameLeader() {
-    const startBtn = document.createElement('button');
-    const startBtnDiv = document.querySelector('#startBtn');
-    startBtn.addEventListener('click', () => room.send('START'));
-    startBtn.innerText = 'Start';
-    startBtnDiv.append(startBtn);
-  }
-
-  function resetBody() {
-    document.body.innerHTML = '<h1>Refresh</h1>';
-  }
-
-  function setStateName(state) {
-    const stateDiv = document.querySelector('#state');
-    stateDiv.innerText = state.gameState.phase.phaseName;
-
-    switch (state.gameState.phase.phaseName) {
-      case 'MAFIA':
-        actionBtn.onclick = voteKillAction;
-        break;
-
-      case 'DOCTOR':
-        actionBtn.onclick = protectAction;
-        break;
-
-      case 'DETECTIVE':
-        actionBtn.onclick = detectAction;
-        break;
+    function voteKillAction(event) {
+        const voteKillPlayerId = window.prompt('sessionId: ');
+        room.send('ACTION', {actionName: 4, voteKillPlayerId});
     }
-  }
 
-  function setCurrentTurns(state) {
-    const turns = document.querySelector('#turns');
-    let template = '';
-    state.gameState.phase.activeRoles.forEach(item => template += `${item}, `);
-    turns.innerText = template;
-  }
+    function detectAction(event) {
+        const detectPlayerId = window.prompt('sessionId: ');
+        room.send('ACTION', {actionName: 6, detectPlayerId});
+    }
 
-  function setCurrentTime(state) {
-    const time = document.querySelector('#time');
-    let phaseTime = state.gameState.phase.phaseTime;
-    time.innerText = phaseTime;
-    const timeInterval = setInterval(() => {
-      if (--phaseTime > 0) {
+    function protectAction(event) {
+        const protectPlayerId = window.prompt('sessionId: ');
+        room.send('ACTION', {actionName: 5, protectPlayerId});
+    }
+
+    async function createClient() {
+        const endPoint = 'ws://localhost:4567';
+        const client = new Colyseus.Client(endPoint);
+        room = await client.joinOrCreate('Mafia',
+            {username: 'lee', jointType: 'PLAYER'});
+
+        room.onMessage('ERROR', (message) => alert(message));
+        room.onMessage('DETECTIVE_RESULT', (message => alert(JSON.stringify(message, null, 2))));
+        room.onMessage('MODERATOR', (message => alert(message)));
+
+        room.onLeave((code, message) => {
+            switch (code) {
+                case 1006:
+                    alert('Server Offline!\n code: ' + code);
+                    break;
+
+                case 1016:
+                    alert(`${message}!\n code: ` + code);
+                    break;
+            }
+            resetBody();
+        });
+        room.onStateChange.once((state) => {
+            console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
+            if (state.gameState.gameLeader === room.sessionId) {
+                setGameLeader();
+            }
+            setStateName(state);
+            setCurrentTurns(state);
+            if (state.gameState.gameStarted)
+                setCurrentTime(state);
+        });
+
+        room.onStateChange((state) => {
+            console.log('state updated!');
+
+            setMyRole(state);
+            setStateName(state);
+            setCurrentTurns(state);
+            setPlayers(state);
+
+            if (state.gameState.gameStarted) {
+                setCurrentTime(state);
+            }
+
+            if (state.gameState.gameLeader === room.sessionId) {
+                setGameLeader();
+            }
+        });
+
+        room.onError(err => console.error(err));
+        // setInterval(() => room.send('ACTION'), 2000);
+    }
+
+    function setPlayers(state) {
+        const playersDiv = document.querySelector('#players');
+        let box = '<hr />';
+        state.players.forEach(player => {
+            box += `<div>${player.sessionId}</div>`;
+        });
+        box += '<hr />';
+        playersDiv.innerHTML = box;
+    }
+
+    function setMyRole(state) {
+        const roleDiv = document.querySelector('#role');
+        const myRole = state.players.filter(player => player.sessionId === room.sessionId)[0].role;
+        roleDiv.innerText = myRole || 'No Roles Yet!';
+    }
+
+    function setGameLeader() {
+        const startBtn = document.createElement('button');
+        const startBtnDiv = document.querySelector('#startBtn');
+        startBtn.addEventListener('click', () => room.send('START'));
+        startBtn.innerText = 'Start';
+        startBtnDiv.append(startBtn);
+    }
+
+    function resetBody() {
+        document.body.innerHTML = '<h1>Refresh</h1>';
+    }
+
+    function setStateName(state) {
+        const stateDiv = document.querySelector('#state');
+        stateDiv.innerText = state.gameState.phase.phaseName;
+
+        switch (state.gameState.phase.phaseName) {
+            case 'MAFIA':
+                actionBtn.onclick = voteKillAction;
+                break;
+
+            case 'DOCTOR':
+                actionBtn.onclick = protectAction;
+                break;
+
+            case 'DETECTIVE':
+                actionBtn.onclick = detectAction;
+                break;
+        }
+    }
+
+    function setCurrentTurns(state) {
+        const turns = document.querySelector('#turns');
+        let template = '';
+        state.gameState.phase.activeRoles.forEach(item => template += `${item}, `);
+        turns.innerText = template;
+    }
+
+    function setCurrentTime(state) {
+        const time = document.querySelector('#time');
+        let phaseTime = state.gameState.phase.phaseTime;
         time.innerText = phaseTime;
-      } else {
-        clearInterval(timeInterval);
-      }
-    }, 1000);
-  }
+        const timeInterval = setInterval(() => {
+            if (--phaseTime > 0) {
+                time.innerText = phaseTime;
+            } else {
+                clearInterval(timeInterval);
+            }
+        }, 1000);
+    }
 
-  createClient().catch(err => alert(err));
+    createClient().catch(err => alert(err));
 
 </script>
+
 </body>
+
 </html>

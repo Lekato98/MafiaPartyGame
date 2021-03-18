@@ -3,7 +3,7 @@ import AbstractActions from "./AbstractActions";
 import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
 import {Client} from "colyseus";
 import MafiaPlayer from "../clients/MafiaPlayer";
-import {InvalidPhaseAction, RoomErrorMessages} from "../../errors/MafiaRoomErrors";
+import {InvalidPhaseAction, RoomErrorMessage} from "../../errors/MafiaRoomErrors";
 
 class DiscussActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
@@ -17,7 +17,7 @@ class DiscussActions extends AbstractActions {
                 break;
 
             default:
-                throw new InvalidPhaseAction(RoomErrorMessages.INVALID_PHASE_ACTION);
+                throw new InvalidPhaseAction(RoomErrorMessage.INVALID_PHASE_ACTION);
         }
     }
 

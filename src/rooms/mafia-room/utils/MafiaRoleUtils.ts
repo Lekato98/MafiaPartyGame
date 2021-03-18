@@ -1,4 +1,4 @@
-import {InvalidNumberOfPlayers, RoomErrorMessages} from "../errors/MafiaRoomErrors";
+import {InvalidNumberOfPlayers, RoomErrorMessage} from "../errors/MafiaRoomErrors";
 import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaRole {
@@ -40,6 +40,14 @@ abstract class MafiaRoleUtils {
             && numberOfPlayers <= MafiaGame.MAX_NUMBER_OF_PLAYERS;
     }
 
+    public static isMafia(role: MafiaRole): boolean {
+        return  role === MafiaRole.MAFIA;
+    }
+
+    public static isVillager(role: MafiaRole): boolean {
+        return role === MafiaRole.INNOCENT || role === MafiaRole.DETECTIVE || role === MafiaRole.DOCTOR;
+    }
+
     public static createStandardGameRolesCollection(numberOfPlayers: number): Array<MafiaRole> {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
@@ -55,7 +63,7 @@ abstract class MafiaRoleUtils {
 
             return this.getGameRolesCollection(numberOfEachRole);
         } else {
-            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessage.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -82,7 +90,7 @@ abstract class MafiaRoleUtils {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             return Math.floor(numberOfPlayers * MafiaGame.STANDARD_PERCENTAGE_FOR_MAFIA);
         } else {
-            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessage.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -91,7 +99,7 @@ abstract class MafiaRoleUtils {
             const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
             return numberOfMafia - MafiaGame.STANDARD_DIFFERENCE_BETWEEN_MAFIA_AND_DETECTIVES;
         } else {
-            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessage.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -99,7 +107,7 @@ abstract class MafiaRoleUtils {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             return Number(MafiaGame.STANDARD_NUMBER_OF_DOCTORS);
         } else {
-            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessage.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 
@@ -110,7 +118,7 @@ abstract class MafiaRoleUtils {
             const numberOfDoctors = this.getNumberOfDoctors(numberOfPlayers);
             return numberOfPlayers - numberOfMafia - numberOfDetectives - numberOfDoctors;
         } else {
-            throw new InvalidNumberOfPlayers(RoomErrorMessages.INVALID_NUMBER_OF_PLAYERS);
+            throw new InvalidNumberOfPlayers(RoomErrorMessage.INVALID_NUMBER_OF_PLAYERS);
         }
     }
 

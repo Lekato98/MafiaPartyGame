@@ -1,5 +1,5 @@
 import {MafiaRole} from "./MafiaRoleUtils";
-import {InvalidPhaseName, RoomErrorMessages} from "../errors/MafiaRoomErrors";
+import {InvalidPhaseName, RoomErrorMessage} from "../errors/MafiaRoomErrors";
 import MafiaSupportUtils from "./MafiaSupportUtils";
 
 export enum MafiaPhaseName {
@@ -140,7 +140,7 @@ abstract class MafiaPhaseUtils {
                 return this.getActiveRolesVotePhase();
 
             default:
-                throw new InvalidPhaseName(RoomErrorMessages.UNKNOWN_PHASE_NAME);
+                throw new InvalidPhaseName(RoomErrorMessage.UNKNOWN_PHASE_NAME);
         }
     }
 

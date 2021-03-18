@@ -17,6 +17,10 @@ abstract class AbstractActions extends Schema {
     players: ArraySchema<MafiaPlayer>;
 
     abstract doAction(client: Client, action: MafiaPhaseAction, payload: any): void;
+
+    public getResult(): Array<any> | ArraySchema<any> {
+        return [];
+    }
 }
 
 export default AbstractActions;

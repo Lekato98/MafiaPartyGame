@@ -3,7 +3,13 @@ import {Client} from "colyseus";
 import {MafiaPlayer} from "./clients/MafiaPlayer";
 import {MafiaSpectator} from "./clients/MafiaSpectator";
 import MafiaGameState from "./MafiaGameState";
-import {GameAlreadyStarted, InvalidClientType, RoomErrorMessages, RoomIsFull} from "../errors/MafiaRoomErrors";
+import {
+    GameAlreadyStarted,
+    InvalidClientType,
+    RoomError,
+    RoomErrorMessage,
+    RoomIsFull,
+} from '../errors/MafiaRoomErrors';
 
 export enum MafiaRoomStateEnum {
     PLAYER = 'PLAYER',
@@ -34,12 +40,12 @@ class MafiaRoomState extends Schema {
 
     public join(client: Client, clientOptions: any): void {
         if (this.isFull(clientOptions.jointType)) {
-            throw new RoomIsFull(RoomErrorMessages.ROOM_IS_FULL);
+            throw new RoomIsFull(RoomErrorMessage.ROOM_IS_FULL);
         } else {
             switch (clientOptions.jointType) {
                 case MafiaRoomStateEnum.PLAYER:
                     if (this.gameState.isGameStarted()) {
-                        throw new GameAlreadyStarted(RoomErrorMessages.GAME_ALREADY_STARTED);
+                        throw new GameAlreadyStarted(RoomErrorMessage.GAME_ALREADY_STARTED);
                     } else {
                         this.players.push(new MafiaPlayer(client, clientOptions.username));
                         this.numberOfPlayers++;
@@ -67,16 +73,22 @@ class MafiaRoomState extends Schema {
             this.removeClient(this.spectators, client.sessionId);
             this.numberOfSpectators--;
         } else {
-            throw new InvalidClientType(RoomErrorMessages.INVALID_CLIENT_TYPE);
+            throw new InvalidClientType(RoomErrorMessage.INVALID_CLIENT_TYPE);
         }
 
         this.gameState.fixGameLeader();
     }
 
     public removeClient(clientsList: ArraySchema, sessionId: string): void {
-        const IndexToRemove = clientsList.map(client => client.sessionId).indexOf(sessionId);
-        this.clientJointType.delete(sessionId);
-        clientsList.splice(IndexToRemove, 1);
+        const indexToRemove = clientsList.findIndex(client => client.getSessionId() === sessionId);
+
+        if(indexToRemove !== -1) {
+            this.clientJointType.delete(sessionId);
+            clientsList.splice(indexToRemove, 1);
+        } else {
+            throw new RoomError(RoomErrorMessage.UNKNOWN_PLAYER);
+        }
+
     }
 
 
@@ -86,7 +98,7 @@ class MafiaRoomState extends Schema {
         } else if (clientType === MafiaRoomStateEnum.SPECTATOR) {
             return this.numberOfSpectators === this.maxNumberOfSpectators;
         } else {
-            throw new InvalidClientType(RoomErrorMessages.INVALID_CLIENT_TYPE);
+            throw new InvalidClientType(RoomErrorMessage.INVALID_CLIENT_TYPE);
         }
     }
 

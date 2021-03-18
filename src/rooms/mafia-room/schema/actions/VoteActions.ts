@@ -4,7 +4,7 @@ import {MafiaPhaseAction, MafiaPhasesActionLimit} from "../../utils/MafiaPhaseAc
 import {Client} from "colyseus";
 import MafiaPlayer from "../clients/MafiaPlayer";
 import {MafiaRole} from "../../utils/MafiaRoleUtils";
-import {InvalidPhaseAction, RoomErrorMessages} from "../../errors/MafiaRoomErrors";
+import {InvalidPhaseAction, RoomErrorMessage} from "../../errors/MafiaRoomErrors";
 
 class VoteActions extends AbstractActions {
     private kickVoteActionLimit: MapSchema<MafiaPhasesActionLimit>;
@@ -27,15 +27,15 @@ class VoteActions extends AbstractActions {
                 break;
 
             default:
-                throw new InvalidPhaseAction(RoomErrorMessages.INVALID_PHASE_ACTION);
+                throw new InvalidPhaseAction(RoomErrorMessage.INVALID_PHASE_ACTION);
         }
     }
 
     public voteAction(client: Client, playerId: string): void {
         if(!this.isPlayerExist(playerId)) {
-            throw new InvalidPhaseAction(RoomErrorMessages.ACTION_ON_UNKNOWN_PLAYER);
+            throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
         }else if (this.hasReachKickVoteLimits(client.sessionId)) {
-            throw new InvalidPhaseAction(RoomErrorMessages.HAS_REACH_ACTION_LIMITS)
+            throw new InvalidPhaseAction(RoomErrorMessage.HAS_REACH_ACTION_LIMITS)
         } else {
             const kickVoteLimit = this.kickVoteActionLimit.get(client.sessionId);
             this.kickVoteActionLimit.set(client.sessionId, kickVoteLimit + 1);

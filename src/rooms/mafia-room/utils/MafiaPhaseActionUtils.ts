@@ -1,5 +1,5 @@
 import {MafiaPhaseName} from "./MafiaPhaseUtils";
-import {InvalidPhaseName, RoomErrorMessages} from "../errors/MafiaRoomErrors";
+import {InvalidPhaseName, RoomErrorMessage} from "../errors/MafiaRoomErrors";
 
 export enum MafiaPhaseAction {
     KICK_VOTE,
@@ -79,7 +79,7 @@ class MafiaPhaseActionUtils {
                 return this.ACTIVE_ACTIONS_VOTE;
 
             default:
-                throw new InvalidPhaseName(RoomErrorMessages.UNKNOWN_PHASE_NAME);
+                throw new InvalidPhaseName(RoomErrorMessage.UNKNOWN_PHASE_NAME);
         }
     }
 }
