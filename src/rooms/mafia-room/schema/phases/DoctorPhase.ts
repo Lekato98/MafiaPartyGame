@@ -1,10 +1,11 @@
-import AbstractPhase from "./AbstractPhase";
-import MafiaGameState from "../MafiaGameState";
-import {MafiaPhaseName, MafiaPhaseTime} from "../../utils/MafiaPhaseUtils";
-import {MafiaActionsName} from "../actions/AbstractActions";
-import MafiaPlayer from "../clients/MafiaPlayer";
-import {MafiaRole} from "../../utils/MafiaRoleUtils";
-import {MafiaRoomMessage, MafiaRoomMessageType} from "../../MafiaRoom";
+import AbstractPhase from './AbstractPhase';
+import MafiaGameState from '../MafiaGameState';
+import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
+import { AbstractActionResult, MafiaActionsName } from '../actions/AbstractActions';
+import MafiaPlayer from '../clients/MafiaPlayer';
+import { MafiaRole } from '../../utils/MafiaRoleUtils';
+import { MafiaRoomMessage, MafiaRoomMessageType } from '../../MafiaRoom';
+import { ArraySchema } from '@colyseus/schema';
 
 class DoctorPhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
@@ -14,13 +15,13 @@ class DoctorPhase extends AbstractPhase {
 
     public onBegin(): void {
         this.context.players.forEach((player: MafiaPlayer) => player.getRole() === MafiaRole.DOCTOR
-            && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.DOCTOR_TO_PROTECT)
-        );
+            && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.DOCTOR_TO_PROTECT),
+        ); // send message for doctor
     }
 
     public onEnd(): void {
-        const results: Array<any> = this.actions.getResult();
-        this.context.phaseActions.push(...results);
+        const results: ArraySchema<AbstractActionResult> = this.actions.getResult();
+        this.context.phaseActionsResult.push(...results);
     }
 
     refreshDoctorPhase(): void {

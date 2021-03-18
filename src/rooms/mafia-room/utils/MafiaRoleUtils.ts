@@ -1,5 +1,5 @@
-import {InvalidNumberOfPlayers, RoomErrorMessage} from "../errors/MafiaRoomErrors";
-import MafiaSupportUtils from "./MafiaSupportUtils";
+import { InvalidNumberOfPlayers, RoomErrorMessage } from '../errors/MafiaRoomErrors';
+import MafiaSupportUtils from './MafiaSupportUtils';
 
 export enum MafiaRole {
     MAFIA = 'MAFIA',
@@ -41,11 +41,19 @@ abstract class MafiaRoleUtils {
     }
 
     public static isMafia(role: MafiaRole): boolean {
-        return  role === MafiaRole.MAFIA;
+        return role === MafiaRole.MAFIA;
     }
 
     public static isVillager(role: MafiaRole): boolean {
         return role === MafiaRole.INNOCENT || role === MafiaRole.DETECTIVE || role === MafiaRole.DOCTOR;
+    }
+
+    public static isAlivePlayer(role: MafiaRole): boolean {
+        return role !== MafiaRole.DEAD && role !== MafiaRole.MODERATOR;
+    }
+
+    public static isDoctor(role: MafiaRole): boolean {
+        return role === MafiaRole.DOCTOR;
     }
 
     public static createStandardGameRolesCollection(numberOfPlayers: number): Array<MafiaRole> {
@@ -58,8 +66,8 @@ abstract class MafiaRoleUtils {
                 numberOfMafia,
                 numberOfDetectives,
                 numberOfDoctors,
-                numberOfInnocents
-            }
+                numberOfInnocents,
+            };
 
             return this.getGameRolesCollection(numberOfEachRole);
         } else {
@@ -140,7 +148,7 @@ abstract class MafiaRoleUtils {
 
     public static getCollectionOfSpecificRole(numberOf: number, role: MafiaRole): Array<MafiaRole> {
         if (numberOf < 0) {
-            throw new Error("Invalid Number");
+            throw new Error('Invalid Number');
         }
 
         return new Array(numberOf).fill(role);

@@ -14,18 +14,23 @@ export enum MafiaRoomMessageType {
 
 export enum MafiaRoomMessage {
     MAFIA_TO_KILL = 'Who do you want to kill?',
-    DOCTOR_TO_PROTECT = 'Who do you want to save?',
+    DOCTOR_TO_PROTECT = 'Who do you want to protect?',
     DETECTOR_TO_DETECT = 'Who do you want to know about?',
-    YOU_WERE_KILLED = 'Mafia Killed You ...'
+    YOU_WERE_KILLED = 'Mafia killed you!'
 }
 
-interface IActionName {
+export interface IActionName {
     actionName: MafiaPhaseAction,
 }
 
+export interface ClientOptions {
+    username: string,
+    jointType: string, // PLAYER, SPECTATOR
+}
+
 class MafiaRoom extends Room {
-    private ROOM_NAME: string;
     public state: MafiaRoomState;
+    private ROOM_NAME: string;
 
     onCreate(options: any): void | Promise<any> {
         // configs & options
@@ -36,9 +41,9 @@ class MafiaRoom extends Room {
         this.setState(new MafiaRoomState());
 
         // events
-        this.onMessage(MafiaRoomMessageType.ACTION, (client: Client, message: IActionName) => {
+        this.onMessage(MafiaRoomMessageType.ACTION, (client: Client, payload: IActionName) => {
             try {
-                this.state.gameState.phase.doAction(client, message.actionName, message);
+                this.state.gameState.phase.doAction(client, payload.actionName, payload);
             } catch (err) {
                 client.send(MafiaRoomMessageType.ERROR, err.message);
             }
@@ -55,11 +60,11 @@ class MafiaRoom extends Room {
         LogsUtils.CREATED(this.ROOM_NAME);
     }
 
-    onAuth(client: Client, clientOptions: any, request?: http.IncomingMessage): any {
+    onAuth(client: Client, clientOptions: ClientOptions, request?: http.IncomingMessage): any {
         return 'token';
     }
 
-    onJoin(client: Client, clientOptions?: any, auth?: any): void | Promise<any> {
+    onJoin(client: Client, clientOptions?: ClientOptions, auth?: any): void | Promise<any> {
         try {
             this.state.join(client, clientOptions);
             LogsUtils.JOINED(this.ROOM_NAME);

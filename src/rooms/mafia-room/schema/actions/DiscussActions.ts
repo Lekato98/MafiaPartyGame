@@ -1,19 +1,18 @@
-import {ArraySchema} from "@colyseus/schema";
-import AbstractActions from "./AbstractActions";
-import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
-import {Client} from "colyseus";
-import MafiaPlayer from "../clients/MafiaPlayer";
-import {InvalidPhaseAction, RoomErrorMessage} from "../../errors/MafiaRoomErrors";
+import { ArraySchema } from '@colyseus/schema';
+import AbstractActions from './AbstractActions';
+import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
+import MafiaPlayer from '../clients/MafiaPlayer';
+import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 
 class DiscussActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
     }
 
-    public doAction(client: Client, action: MafiaPhaseAction, payload: any): void {
+    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.MESSAGE_TO_ALL:
-                this.messageToAllAction(client, payload.message);
+                this.messageToAllAction(player, payload.message);
                 break;
 
             default:
@@ -21,7 +20,7 @@ class DiscussActions extends AbstractActions {
         }
     }
 
-    public messageToAllAction(client: Client, message: string) {
+    public messageToAllAction(player: MafiaPlayer, message: string) {
         this.players.forEach(player => player.send(MafiaPhaseAction.MESSAGE_TO_ALL, message));
     }
 }

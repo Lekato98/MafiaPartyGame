@@ -10,6 +10,7 @@ import { MafiaRoomStateEnum } from './MafiaRoomState';
 import MafiaSupportUtils from '../utils/MafiaSupportUtils';
 import { MafiaPhaseName } from '../utils/MafiaPhaseUtils';
 import PhasesFactory from './phases/PhaseFactory';
+import { AbstractActionResult } from './actions/AbstractActions';
 
 // todo endGame & rematch
 class MafiaGameState extends Schema {
@@ -17,10 +18,10 @@ class MafiaGameState extends Schema {
     @type('string') public gameLeader: string;
     @type('boolean') public gameStarted: boolean;
     @type('boolean') public gameOver: boolean;
+    @type([AbstractActionResult]) public phaseActionsResult: ArraySchema<AbstractActionResult>;
 
     public rolesCollection: ArraySchema<MafiaRole>;
     public phaseTimeout: NodeJS.Timeout;
-    public phaseActions: ArraySchema<any>;
 
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
@@ -144,7 +145,7 @@ class MafiaGameState extends Schema {
         this.gameOver = false;
         this.gameLeader = MafiaRoomStateEnum.DEFAULT_GAME_LEADER;
         this.phase = new NightPhase(this);
-        this.phaseActions = new ArraySchema<any>();
+        this.phaseActionsResult = new ArraySchema<AbstractActionResult>();
     }
 }
 

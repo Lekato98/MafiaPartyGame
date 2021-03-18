@@ -1,5 +1,5 @@
-import {MafiaPhaseName} from "./MafiaPhaseUtils";
-import {InvalidPhaseName, RoomErrorMessage} from "../errors/MafiaRoomErrors";
+import { MafiaPhaseName } from './MafiaPhaseUtils';
+import { InvalidPhaseName, RoomErrorMessage } from '../errors/MafiaRoomErrors';
 
 export enum MafiaPhaseAction {
     KICK_VOTE,

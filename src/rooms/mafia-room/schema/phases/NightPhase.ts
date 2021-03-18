@@ -1,7 +1,7 @@
-import AbstractPhase from "./AbstractPhase";
-import MafiaGameState from "../MafiaGameState";
-import {MafiaPhaseName, MafiaPhaseTime} from "../../utils/MafiaPhaseUtils";
-import {MafiaActionsName} from "../actions/AbstractActions";
+import AbstractPhase from './AbstractPhase';
+import MafiaGameState from '../MafiaGameState';
+import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
+import { MafiaActionsName } from '../actions/AbstractActions';
 
 class NightPhase extends AbstractPhase {
 
@@ -11,7 +11,7 @@ class NightPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
-        this.context.phaseActions.clear();
+        this.context.phaseActionsResult.clear();
     }
 
     refreshNightPhase() {

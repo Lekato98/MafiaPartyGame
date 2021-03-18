@@ -1,7 +1,6 @@
-import {Client} from "colyseus";
-import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
-import {ArraySchema, Schema, type} from "@colyseus/schema";
-import MafiaPlayer from "../clients/MafiaPlayer";
+import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
+import { ArraySchema, Schema, type } from '@colyseus/schema';
+import MafiaPlayer from '../clients/MafiaPlayer';
 
 export enum MafiaActionsName {
     DOCTOR_ACTIONS = 'DOCTOR_ACTIONS',
@@ -12,14 +11,19 @@ export enum MafiaActionsName {
     MODERATOR_ACTIONS = 'MODERATOR_ACTIONS',
 }
 
+export abstract class AbstractActionResult extends Schema {
+    actionName: MafiaPhaseAction;
+    playerId: string;
+}
+
 abstract class AbstractActions extends Schema {
     @type('string') readonly emptyString: string = 'empty';
     players: ArraySchema<MafiaPlayer>;
 
-    abstract doAction(client: Client, action: MafiaPhaseAction, payload: any): void;
+    abstract doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void;
 
-    public getResult(): Array<any> | ArraySchema<any> {
-        return [];
+    public getResult(): ArraySchema<AbstractActionResult> {
+        return new ArraySchema<AbstractActionResult>();
     }
 }
 

@@ -1,9 +1,9 @@
-import AbstractPhase from "./AbstractPhase";
-import MafiaGameState from "../MafiaGameState";
-import {MafiaPhaseName, MafiaPhaseTime} from "../../utils/MafiaPhaseUtils";
-import {MafiaActionsName} from "../actions/AbstractActions";
-import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
-import {MafiaRole} from "../../utils/MafiaRoleUtils";
+import AbstractPhase from './AbstractPhase';
+import MafiaGameState from '../MafiaGameState';
+import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
+import { MafiaActionsName } from '../actions/AbstractActions';
+import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
+import { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { MafiaRoomMessage, MafiaRoomMessageType } from '../../MafiaRoom';
 
 class DayPhase extends AbstractPhase {
@@ -15,8 +15,8 @@ class DayPhase extends AbstractPhase {
     public onBegin(): void {
         let playerToKill = '';
         let playerToProtect = '';
-        this.context.phaseActions.forEach(payload => {
-            switch (payload.action) {
+        this.context.phaseActionsResult.forEach(payload => {
+            switch (payload.actionName) {
                 case MafiaPhaseAction.MAFIA_KILL_VOTE:
                     playerToKill = payload.playerId;
                     break;

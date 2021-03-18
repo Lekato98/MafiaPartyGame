@@ -1,8 +1,8 @@
-import {ArraySchema, MapSchema, Schema, type} from "@colyseus/schema";
-import {Client} from "colyseus";
-import {MafiaPlayer} from "./clients/MafiaPlayer";
-import {MafiaSpectator} from "./clients/MafiaSpectator";
-import MafiaGameState from "./MafiaGameState";
+import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema';
+import { Client } from 'colyseus';
+import { MafiaPlayer } from './clients/MafiaPlayer';
+import { MafiaSpectator } from './clients/MafiaSpectator';
+import MafiaGameState from './MafiaGameState';
 import {
     GameAlreadyStarted,
     InvalidClientType,
@@ -10,6 +10,7 @@ import {
     RoomErrorMessage,
     RoomIsFull,
 } from '../errors/MafiaRoomErrors';
+import { ClientOptions } from '../MafiaRoom';
 
 export enum MafiaRoomStateEnum {
     PLAYER = 'PLAYER',
@@ -31,14 +32,15 @@ class MafiaRoomState extends Schema {
     @type([MafiaSpectator]) private spectators: ArraySchema<MafiaSpectator>;
     @type('uint8') private numberOfPlayers: number;
     @type('uint8') private numberOfSpectators: number;
-    @type({map: 'string'}) private clientJointType: MapSchema<string>; // sessionId -> jointType
+
+    private clientJointType: MapSchema<string>; // sessionId -> jointType,  @type({map: 'string'})
 
     constructor() {
         super();
         this.refreshMafiaRoomState();
     }
 
-    public join(client: Client, clientOptions: any): void {
+    public join(client: Client, clientOptions: ClientOptions): void {
         if (this.isFull(clientOptions.jointType)) {
             throw new RoomIsFull(RoomErrorMessage.ROOM_IS_FULL);
         } else {
@@ -82,7 +84,7 @@ class MafiaRoomState extends Schema {
     public removeClient(clientsList: ArraySchema, sessionId: string): void {
         const indexToRemove = clientsList.findIndex(client => client.getSessionId() === sessionId);
 
-        if(indexToRemove !== -1) {
+        if (indexToRemove !== -1) {
             this.clientJointType.delete(sessionId);
             clientsList.splice(indexToRemove, 1);
         } else {

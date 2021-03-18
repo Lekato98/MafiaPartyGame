@@ -1,6 +1,6 @@
-import {MafiaRole} from "./MafiaRoleUtils";
-import {InvalidPhaseName, RoomErrorMessage} from "../errors/MafiaRoomErrors";
-import MafiaSupportUtils from "./MafiaSupportUtils";
+import { MafiaRole } from './MafiaRoleUtils';
+import { InvalidPhaseName, RoomErrorMessage } from '../errors/MafiaRoomErrors';
+import MafiaSupportUtils from './MafiaSupportUtils';
 
 export enum MafiaPhaseName {
     NIGHT_PHASE = 'NIGHT',

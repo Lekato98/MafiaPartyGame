@@ -1,14 +1,14 @@
-import AbstractPhase from "./AbstractPhase";
-import MafiaGameState from "../MafiaGameState";
-import NightPhase from "./NightPhase";
-import MafiaPhase from "./MafiaPhase";
-import DetectivePhase from "./DetectivePhase";
-import DoctorPhase from "./DoctorPhase";
-import DayPhase from "./DayPhase";
-import DiscussPhase from "./DiscussPhase";
-import VotePhase from "./VotePhase";
-import {MafiaPhaseName} from "../../utils/MafiaPhaseUtils";
-import {InvalidPhaseName, RoomErrorMessage} from "../../errors/MafiaRoomErrors";
+import AbstractPhase from './AbstractPhase';
+import MafiaGameState from '../MafiaGameState';
+import NightPhase from './NightPhase';
+import MafiaPhase from './MafiaPhase';
+import DetectivePhase from './DetectivePhase';
+import DoctorPhase from './DoctorPhase';
+import DayPhase from './DayPhase';
+import DiscussPhase from './DiscussPhase';
+import VotePhase from './VotePhase';
+import { MafiaPhaseName } from '../../utils/MafiaPhaseUtils';
+import { InvalidPhaseName, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 
 class PhaseFactory {
     public static createPhase(phaseType: MafiaPhaseName, context: MafiaGameState): AbstractPhase {

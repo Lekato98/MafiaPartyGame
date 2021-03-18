@@ -1,9 +1,17 @@
-import {ArraySchema, type} from "@colyseus/schema";
-import AbstractActions from "./AbstractActions";
-import {InvalidPhaseAction, RoomErrorMessage} from "../../errors/MafiaRoomErrors";
-import {Client} from "colyseus";
-import {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
-import MafiaPlayer from "../clients/MafiaPlayer";
+import { ArraySchema } from '@colyseus/schema';
+import AbstractActions, { AbstractActionResult } from './AbstractActions';
+import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
+import MafiaPlayer from '../clients/MafiaPlayer';
+import MafiaRoleUtils from '../../utils/MafiaRoleUtils';
+
+export class ProtectActionResult extends AbstractActionResult {
+    constructor() {
+        super();
+        this.actionName = MafiaPhaseAction.DOCTOR_PROTECT_ONE;
+        this.playerId = '';
+    }
+}
 
 class DoctorActions extends AbstractActions {
     protectedPlayer: string;
@@ -13,20 +21,22 @@ class DoctorActions extends AbstractActions {
         this.protectedPlayer = '';
     }
 
-    public doAction(client: Client, action: MafiaPhaseAction, payload: any): void {
+    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.DOCTOR_PROTECT_ONE:
-                this.protectAction(client, payload.protectPlayerId);
+                this.protectAction(player, payload.protectPlayerId);
                 break;
             default:
                 throw new InvalidPhaseAction(RoomErrorMessage.INVALID_PHASE_ACTION);
         }
     }
 
-    public protectAction(client: Client, protectSessionId: string): void {
-        if (!this.isPlayerExist(protectSessionId)) {
+    public protectAction(player: MafiaPlayer, protectSessionId: string): void {
+        if (!MafiaRoleUtils.isDoctor(player.getRole())) {
+            throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
+        } else if (!this.isPlayerExist(protectSessionId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
-        } else if (this.isDoctorProtectingHimself(client.sessionId, protectSessionId)) {
+        } else if (this.isDoctorProtectingHimself(player.getSessionId(), protectSessionId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.DOCTOR_PROTECT_HIMSELF);
         } else {
             this.setProtectedPlayer(protectSessionId);
@@ -45,9 +55,9 @@ class DoctorActions extends AbstractActions {
         return this.players.map(player => player.getSessionId()).includes(sessionId);
     }
 
-    public getResult(): Array<any> | ArraySchema<any> {
-        const result = new ArraySchema();
-        if(this.protectedPlayer !== '') {
+    public getResult(): ArraySchema<AbstractActionResult> {
+        const result = new ArraySchema<AbstractActionResult>();
+        if (this.protectedPlayer !== '') {
             const protectResult = this.getProtectResult();
             result.push(protectResult);
         }
@@ -55,11 +65,11 @@ class DoctorActions extends AbstractActions {
         return result;
     }
 
-    public getProtectResult() {
-        return {
-            action: MafiaPhaseAction.DOCTOR_PROTECT_ONE,
-            playerId: this.protectedPlayer
-        }
+    public getProtectResult(): AbstractActionResult {
+        const protectActionResult = new ProtectActionResult();
+        protectActionResult.playerId = this.protectedPlayer;
+
+        return protectActionResult;
     }
 }
 

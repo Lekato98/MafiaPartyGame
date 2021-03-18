@@ -1,4 +1,4 @@
-import {ArraySchema} from "@colyseus/schema";
+import { ArraySchema } from '@colyseus/schema';
 
 // @TODO Change class name
 abstract class MafiaSupportUtils {

@@ -1,4 +1,4 @@
-import {Schema, type} from "@colyseus/schema";
+import { Schema, type } from '@colyseus/schema';
 
 export class MafiaSpectator extends Schema {
     @type('string') private readonly sessionId: string;

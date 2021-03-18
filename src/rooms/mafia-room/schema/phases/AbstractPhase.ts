@@ -1,13 +1,13 @@
-import {ArraySchema, Schema, type} from "@colyseus/schema";
-import {MafiaRole} from "../../utils/MafiaRoleUtils";
-import MafiaPhaseUtils, {MafiaPhaseName, MafiaPhaseTime} from '../../utils/MafiaPhaseUtils';
-import MafiaGameState from "../MafiaGameState";
-import MafiaSupportUtils from "../../utils/MafiaSupportUtils";
-import MafiaPhaseActionUtils, {MafiaPhaseAction} from "../../utils/MafiaPhaseActionUtils";
-import AbstractActions, {MafiaActionsName} from "../actions/AbstractActions";
-import {Client} from "colyseus";
-import {InvalidPhaseAction, RoomErrorMessage} from "../../errors/MafiaRoomErrors";
-import ActionsFactory from "../actions/ActionsFactory";
+import { ArraySchema, Schema, type } from '@colyseus/schema';
+import { MafiaRole } from '../../utils/MafiaRoleUtils';
+import MafiaPhaseUtils, { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
+import MafiaGameState from '../MafiaGameState';
+import MafiaSupportUtils from '../../utils/MafiaSupportUtils';
+import MafiaPhaseActionUtils, { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
+import AbstractActions, { MafiaActionsName } from '../actions/AbstractActions';
+import { Client } from 'colyseus';
+import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import ActionsFactory from '../actions/ActionsFactory';
 
 abstract class AbstractPhase extends Schema {
     public readonly context: MafiaGameState;
@@ -39,23 +39,23 @@ abstract class AbstractPhase extends Schema {
         const player = this.context.getPlayerBySessionId(client.sessionId);
         if (!this.isValidAction(action)) {
             throw new InvalidPhaseAction(RoomErrorMessage.UNKNOWN_ACTION_NAME);
-        } else if(!this.isValidRole(player.getRole())) {
+        } else if (!this.isValidRole(player.getRole())) {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
         } else {
-            this.actions.doAction(client, action, payload);
+            this.actions.doAction(player, action, payload);
         }
     }
 
     public initializeActiveActions(): void {
         this.activeActions = MafiaSupportUtils.convertArrayToArraySchema(
             MafiaPhaseActionUtils.getActiveActionsByPhaseName(this.phaseName)
-                .concat(MafiaPhaseActionUtils.ACTIVE_ACTIONS_ALL)
+                .concat(MafiaPhaseActionUtils.ACTIVE_ACTIONS_ALL),
         );
     }
 
     public initializeActiveRoles(): void {
         this.activeRoles = MafiaSupportUtils.convertArrayToArraySchema(
-            MafiaPhaseUtils.getActiveRolesByPhaseName(this.phaseName)
+            MafiaPhaseUtils.getActiveRolesByPhaseName(this.phaseName),
         );
     }
 
