@@ -14,13 +14,13 @@ class VoteKillActionResult extends AbstractActionResult {
 }
 
 class MafiaActions extends AbstractActions {
-    private killVoteActionLimit: MapSchema<MafiaPhasesActionLimit>;
+    private killVoteActionLimit: MapSchema<number>;
     private killVotes: MapSchema<number>;
 
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
         this.killVotes = new MapSchema<number>();
-        this.killVoteActionLimit = new MapSchema<MafiaPhasesActionLimit>();
+        this.killVoteActionLimit = new MapSchema<number>();
         this.players.forEach((mafiaRolePlayer: MafiaPlayer) =>
             mafiaRolePlayer.getRole() === MafiaRole.MAFIA
             && this.killVoteActionLimit.set(mafiaRolePlayer.getSessionId(), 0), // 0 initial value

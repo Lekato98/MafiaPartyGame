@@ -11,7 +11,7 @@ class VotePhase extends AbstractPhase {
 
     refreshVotePhase(): void {
         this.phaseName = MafiaPhaseName.VOTE_PHASE;
-        this.phaseTime = MafiaPhaseTime.VOTE_PHASE_TIME;
+        this.phaseTime = MafiaPhaseTime.VOTE_PHASE;
         this.actionsName = MafiaActionsName.VOTE_ACTIONS;
         this.refreshPhase();
     }

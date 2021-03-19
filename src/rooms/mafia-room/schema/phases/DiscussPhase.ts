@@ -11,7 +11,7 @@ class DiscussPhase extends AbstractPhase {
 
     refreshDiscussPhase() {
         this.phaseName = MafiaPhaseName.DISCUSS_PHASE;
-        this.phaseTime = MafiaPhaseTime.DISCUSS_PHASE_TIME;
+        this.phaseTime = MafiaPhaseTime.DISCUSS_PHASE;
         this.actionsName = MafiaActionsName.DISCUSS_ACTIONS;
         this.refreshPhase();
     }

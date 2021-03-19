@@ -38,7 +38,7 @@ class DayPhase extends AbstractPhase {
 
     refreshDayPhase(): void {
         this.phaseName = MafiaPhaseName.DAY_PHASE;
-        this.phaseTime = MafiaPhaseTime.DAY_PHASE_TIME;
+        this.phaseTime = MafiaPhaseTime.DAY_PHASE;
         this.actionsName = MafiaActionsName.MODERATOR_ACTIONS;
         this.refreshPhase();
     }

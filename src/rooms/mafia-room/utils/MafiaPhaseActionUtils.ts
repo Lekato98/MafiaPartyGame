@@ -38,7 +38,7 @@ class MafiaPhaseActionUtils {
         MafiaPhaseAction.MAFIA_KILL_VOTE,
     ];
 
-    public static readonly ACTIVE_ACTIONS_DETECTIVE: Array<MafiaPhaseAction> = [
+    public static readonly ACTIVE_ACTIONS_DETECTOR: Array<MafiaPhaseAction> = [
         MafiaPhaseAction.DETECTOR_DETECT_ONE,
     ];
 
@@ -63,8 +63,8 @@ class MafiaPhaseActionUtils {
             case MafiaPhaseName.MAFIA_PHASE:
                 return this.ACTIVE_ACTIONS_MAFIA;
 
-            case MafiaPhaseName.DETECTIVE_PHASE:
-                return this.ACTIVE_ACTIONS_DETECTIVE;
+            case MafiaPhaseName.DETECTOR_PHASE:
+                return this.ACTIVE_ACTIONS_DETECTOR;
 
             case MafiaPhaseName.DOCTOR_PHASE:
                 return this.ACTIVE_ACTIONS_DOCTOR;

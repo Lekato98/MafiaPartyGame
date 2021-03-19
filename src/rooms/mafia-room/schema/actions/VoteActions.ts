@@ -6,12 +6,12 @@ import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 
 class VoteActions extends AbstractActions {
-    private kickVoteActionLimit: MapSchema<MafiaPhasesActionLimit>;
+    private kickVoteActionLimit: MapSchema<number>;
     private kickVotes: ArraySchema<string>;
 
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
-        this.kickVoteActionLimit = new MapSchema<MafiaPhasesActionLimit>();
+        this.kickVoteActionLimit = new MapSchema<number>();
         this.kickVotes = new ArraySchema<string>();
 
         this.players.forEach((player: MafiaPlayer) => player.getRole() !== MafiaRole.DEAD

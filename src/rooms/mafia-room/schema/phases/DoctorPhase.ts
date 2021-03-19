@@ -26,7 +26,7 @@ class DoctorPhase extends AbstractPhase {
 
     refreshDoctorPhase(): void {
         this.phaseName = MafiaPhaseName.DOCTOR_PHASE;
-        this.phaseTime = MafiaPhaseTime.DOCTOR_PHASE_TIME;
+        this.phaseTime = MafiaPhaseTime.DOCTOR_PHASE;
         this.actionsName = MafiaActionsName.DOCTOR_ACTIONS;
         this.refreshPhase();
     }

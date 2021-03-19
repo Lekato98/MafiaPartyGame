@@ -5,7 +5,7 @@ import MafiaSupportUtils from './MafiaSupportUtils';
 export enum MafiaPhaseName {
     NIGHT_PHASE = 'NIGHT',
     MAFIA_PHASE = 'MAFIA',
-    DETECTIVE_PHASE = 'DETECTIVE',
+    DETECTOR_PHASE = 'DETECTOR',
     DOCTOR_PHASE = 'DOCTOR',
     DAY_PHASE = 'DAY',
     DISCUSS_PHASE = 'DISCUSS',
@@ -13,20 +13,20 @@ export enum MafiaPhaseName {
 }
 
 export enum MafiaPhaseTime { // time in seconds
-    NIGHT_PHASE_TIME = 3,
-    MAFIA_PHASE_TIME = 15,
-    DETECTIVE_PHASE_TIME = 15,
-    DOCTOR_PHASE_TIME = 15,
-    DAY_PHASE_TIME = 3,
-    DISCUSS_PHASE_TIME = 6,
-    VOTE_PHASE_TIME = 6,
+    NIGHT_PHASE = 3,
+    MAFIA_PHASE = 15,
+    DETECTOR_PHASE = 15,
+    DOCTOR_PHASE = 15,
+    DAY_PHASE = 3,
+    DISCUSS_PHASE = 6,
+    VOTE_PHASE = 6,
 }
 
 abstract class MafiaPhaseUtils {
     private static readonly STANDARD_ORDER_PHASES: Array<MafiaPhaseName> = [
         MafiaPhaseName.NIGHT_PHASE, // All sleep
         MafiaPhaseName.MAFIA_PHASE,
-        MafiaPhaseName.DETECTIVE_PHASE,
+        MafiaPhaseName.DETECTOR_PHASE,
         MafiaPhaseName.DOCTOR_PHASE,
         MafiaPhaseName.DAY_PHASE, // All wake up
         MafiaPhaseName.DISCUSS_PHASE,
@@ -35,7 +35,7 @@ abstract class MafiaPhaseUtils {
 
     private static readonly STANDARD_ACTIVE_ROLES_NIGHT_PHASE: Array<MafiaRole> = [
         MafiaRole.MAFIA,
-        MafiaRole.DETECTIVE,
+        MafiaRole.DETECTOR,
         MafiaRole.INNOCENT,
         MafiaRole.DOCTOR,
         MafiaRole.DEAD,
@@ -46,8 +46,8 @@ abstract class MafiaPhaseUtils {
         MafiaRole.DEAD,
     ];
 
-    private static readonly STANDARD_ACTIVE_ROLES_DETECTIVE_PHASE: Array<MafiaRole> = [
-        MafiaRole.DETECTIVE,
+    private static readonly STANDARD_ACTIVE_ROLES_DETECTOR_PHASE: Array<MafiaRole> = [
+        MafiaRole.DETECTOR,
         MafiaRole.DEAD,
     ];
 
@@ -62,7 +62,7 @@ abstract class MafiaPhaseUtils {
 
     private static readonly STANDARD_ACTIVE_ROLES_DISCUSS_PHASE: Array<MafiaRole> = [
         MafiaRole.MAFIA,
-        MafiaRole.DETECTIVE,
+        MafiaRole.DETECTOR,
         MafiaRole.INNOCENT,
         MafiaRole.DOCTOR,
         MafiaRole.DEAD,
@@ -70,7 +70,7 @@ abstract class MafiaPhaseUtils {
 
     private static readonly STANDARD_ACTIVE_ROLES_VOTE_PHASE: Array<MafiaRole> = [
         MafiaRole.MAFIA,
-        MafiaRole.DETECTIVE,
+        MafiaRole.DETECTOR,
         MafiaRole.INNOCENT,
         MafiaRole.DOCTOR,
         MafiaRole.DEAD,
@@ -96,8 +96,8 @@ abstract class MafiaPhaseUtils {
         return [...this.STANDARD_ACTIVE_ROLES_MAFIA_PHASE];
     }
 
-    public static getActiveRolesDetectivePhase(): Array<MafiaRole> {
-        return [...this.STANDARD_ACTIVE_ROLES_DETECTIVE_PHASE];
+    public static getActiveRolesDetectorPhase(): Array<MafiaRole> {
+        return [...this.STANDARD_ACTIVE_ROLES_DETECTOR_PHASE];
     }
 
     public static getActiveRolesDoctorPhase(): Array<MafiaRole> {
@@ -124,8 +124,8 @@ abstract class MafiaPhaseUtils {
             case MafiaPhaseName.MAFIA_PHASE:
                 return this.getActiveRolesMafiaPhase();
 
-            case MafiaPhaseName.DETECTIVE_PHASE:
-                return this.getActiveRolesDetectivePhase();
+            case MafiaPhaseName.DETECTOR_PHASE:
+                return this.getActiveRolesDetectorPhase();
 
             case MafiaPhaseName.DOCTOR_PHASE:
                 return this.getActiveRolesDoctorPhase();

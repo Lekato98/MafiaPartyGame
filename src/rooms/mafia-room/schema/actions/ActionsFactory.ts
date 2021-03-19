@@ -1,7 +1,7 @@
 import { ArraySchema } from '@colyseus/schema';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import { MafiaActionsName } from './AbstractActions';
-import DetectiveActions from './DetectiveActions';
+import DetectorActions from './DetectorActions';
 import DiscussActions from './DiscussActions';
 import DoctorActions from './DoctorActions';
 import VoteActions from './VoteActions';
@@ -12,8 +12,8 @@ import ModeratorActions from './ModeratorActions';
 abstract class ActionsFactory {
     public static createActions(action: MafiaActionsName, players: ArraySchema<MafiaPlayer>) {
         switch (action) {
-            case MafiaActionsName.DETECTIVE_ACTIONS:
-                return new DetectiveActions(players);
+            case MafiaActionsName.DETECTOR_ACTIONS:
+                return new DetectorActions(players);
 
             case MafiaActionsName.DISCUSS_ACTIONS:
                 return new DiscussActions(players);

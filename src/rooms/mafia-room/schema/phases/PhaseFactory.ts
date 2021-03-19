@@ -2,7 +2,7 @@ import AbstractPhase from './AbstractPhase';
 import MafiaGameState from '../MafiaGameState';
 import NightPhase from './NightPhase';
 import MafiaPhase from './MafiaPhase';
-import DetectivePhase from './DetectivePhase';
+import DetectorPhase from './DetectorPhase';
 import DoctorPhase from './DoctorPhase';
 import DayPhase from './DayPhase';
 import DiscussPhase from './DiscussPhase';
@@ -19,8 +19,8 @@ class PhaseFactory {
             case MafiaPhaseName.MAFIA_PHASE:
                 return new MafiaPhase(context);
 
-            case MafiaPhaseName.DETECTIVE_PHASE:
-                return new DetectivePhase(context);
+            case MafiaPhaseName.DETECTOR_PHASE:
+                return new DetectorPhase(context);
 
             case MafiaPhaseName.DOCTOR_PHASE:
                 return new DoctorPhase(context);

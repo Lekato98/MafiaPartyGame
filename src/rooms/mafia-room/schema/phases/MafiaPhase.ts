@@ -26,7 +26,7 @@ class MafiaPhase extends AbstractPhase {
 
     refreshMafiaPhase(): void {
         this.phaseName = MafiaPhaseName.MAFIA_PHASE;
-        this.phaseTime = MafiaPhaseTime.MAFIA_PHASE_TIME;
+        this.phaseTime = MafiaPhaseTime.MAFIA_PHASE;
         this.actionsName = MafiaActionsName.MAFIA_ACTIONS;
         this.refreshPhase();
     }

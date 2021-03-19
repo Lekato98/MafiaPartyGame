@@ -4,7 +4,7 @@ import MafiaPlayer from '../clients/MafiaPlayer';
 
 export enum MafiaActionsName {
     DOCTOR_ACTIONS = 'DOCTOR_ACTIONS',
-    DETECTIVE_ACTIONS = 'DETECTIVE_ACTIONS',
+    DETECTOR_ACTIONS = 'DETECTOR_ACTIONS',
     MAFIA_ACTIONS = 'MAFIA_ACTIONS',
     VOTE_ACTIONS = 'VOTE_ACTIONS',
     DISCUSS_ACTIONS = 'DISCUSS_ACTIONS',
