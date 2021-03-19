@@ -2,12 +2,13 @@ import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { MafiaRole } from '../../utils/MafiaRoleUtils';
 import MafiaPhaseUtils, { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
 import MafiaGameState from '../MafiaGameState';
-import MafiaSupportUtils from '../../utils/MafiaSupportUtils';
 import MafiaPhaseActionUtils, { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import AbstractActions, { MafiaActionsName } from '../actions/AbstractActions';
 import { Client } from 'colyseus';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import ActionsFactory from '../actions/ActionsFactory';
+import { IActionName } from '../../MafiaRoom';
+import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 
 abstract class AbstractPhase extends Schema {
     public readonly context: MafiaGameState;
@@ -19,7 +20,6 @@ abstract class AbstractPhase extends Schema {
     @type(['uint8']) public activeActions: ArraySchema<MafiaPhaseAction>;
     @type(AbstractActions) public actions: AbstractActions;
 
-    // TODO onBegin & onEnd
     public onBegin(): void {
     }
 
@@ -35,7 +35,7 @@ abstract class AbstractPhase extends Schema {
         this.context.setCurrentPhaseByName(nextPhase);
     }
 
-    public doAction(client: Client, action: MafiaPhaseAction, payload: any): void {
+    public doAction(client: Client, action: MafiaPhaseAction, payload: IActionName): void {
         const player = this.context.getPlayerBySessionId(client.sessionId);
         if (!this.isValidAction(action)) {
             throw new InvalidPhaseAction(RoomErrorMessage.UNKNOWN_ACTION_NAME);
@@ -47,14 +47,14 @@ abstract class AbstractPhase extends Schema {
     }
 
     public initializeActiveActions(): void {
-        this.activeActions = MafiaSupportUtils.convertArrayToArraySchema(
+        this.activeActions = ColyseusUtils.convertArrayToArraySchema(
             MafiaPhaseActionUtils.getActiveActionsByPhaseName(this.phaseName)
                 .concat(MafiaPhaseActionUtils.ACTIVE_ACTIONS_ALL),
         );
     }
 
     public initializeActiveRoles(): void {
-        this.activeRoles = MafiaSupportUtils.convertArrayToArraySchema(
+        this.activeRoles = ColyseusUtils.convertArrayToArraySchema(
             MafiaPhaseUtils.getActiveRolesByPhaseName(this.phaseName),
         );
     }

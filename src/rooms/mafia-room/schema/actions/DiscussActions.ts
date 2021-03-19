@@ -3,6 +3,7 @@ import AbstractActions from './AbstractActions';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import { IMessageToAllPayload } from '../payloads/actionsPayload';
 
 class DiscussActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
@@ -12,7 +13,11 @@ class DiscussActions extends AbstractActions {
     public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.MESSAGE_TO_ALL:
-                this.messageToAllAction(player, payload.message);
+                this.messageToAllAction(player, payload);
+                break;
+
+            case MafiaPhaseAction.MESSAGE_TO_DEAD:
+                this.messageToDead(player, payload);
                 break;
 
             default:
@@ -20,8 +25,8 @@ class DiscussActions extends AbstractActions {
         }
     }
 
-    public messageToAllAction(player: MafiaPlayer, message: string) {
-        this.players.forEach(player => player.send(MafiaPhaseAction.MESSAGE_TO_ALL, message));
+    public messageToAllAction(player: MafiaPlayer, payload: IMessageToAllPayload) {
+        this.players.forEach(player => player.send(MafiaPhaseAction.MESSAGE_TO_ALL, payload.message));
     }
 }
 

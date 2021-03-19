@@ -7,12 +7,11 @@ import MafiaPlayer from './clients/MafiaPlayer';
 import { MafiaRoomMessageType } from '../MafiaRoom';
 import { RoomError, RoomErrorMessage } from '../errors/MafiaRoomErrors';
 import { MafiaRoomStateEnum } from './MafiaRoomState';
-import MafiaSupportUtils from '../utils/MafiaSupportUtils';
 import { MafiaPhaseName } from '../utils/MafiaPhaseUtils';
 import PhasesFactory from './phases/PhaseFactory';
-import { AbstractActionResult } from './actions/AbstractActions';
+import { AbstractActionResult } from './results/actionResults';
+import ColyseusUtils from '../../../colyseus/utils/ColyseusUtils';
 
-// todo endGame & rematch
 class MafiaGameState extends Schema {
     @type(AbstractPhase) public phase: AbstractPhase;
     @type('string') public gameLeader: string;
@@ -79,7 +78,7 @@ class MafiaGameState extends Schema {
 
     public buildGameRoles(): void {
         const numberOfPlayers: number = this.players.length;
-        const gameRolesCollection: ArraySchema<MafiaRole> = MafiaSupportUtils.convertArrayToArraySchema(
+        const gameRolesCollection: ArraySchema<MafiaRole> = ColyseusUtils.convertArrayToArraySchema(
             MafiaRoleUtils.createShuffledGameRolesCollection(numberOfPlayers),
         );
         this.setRolesCollection(gameRolesCollection);
@@ -89,6 +88,15 @@ class MafiaGameState extends Schema {
     public endGame(): void {
         this.stopPhaseLifeCycle();
         this.gameOver = true;
+    }
+
+    public replaceOneRoleInRolesCollection(roleToReplace: MafiaRole, newRole: MafiaRole): void {
+        const indexOfRole = this.rolesCollection.indexOf(roleToReplace);
+        if(indexOfRole !== -1) {
+            this.rolesCollection.setAt(indexOfRole, newRole);
+        } else {
+            throw new RoomError(RoomErrorMessage.INVALID_REPLACE_UNAVAILABLE_ROLE);
+        }
     }
 
     public isEndGame(): boolean {

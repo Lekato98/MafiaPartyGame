@@ -1,6 +1,6 @@
 import { MafiaRole } from './MafiaRoleUtils';
 import { InvalidPhaseName, RoomErrorMessage } from '../errors/MafiaRoomErrors';
-import MafiaSupportUtils from './MafiaSupportUtils';
+import MafiaGeneralUtils from './MafiaGeneralUtils';
 
 export enum MafiaPhaseName {
     NIGHT_PHASE = 'NIGHT',
@@ -14,9 +14,9 @@ export enum MafiaPhaseName {
 
 export enum MafiaPhaseTime { // time in seconds
     NIGHT_PHASE = 3,
-    MAFIA_PHASE = 15,
+    MAFIA_PHASE = 10,
     DETECTOR_PHASE = 15,
-    DOCTOR_PHASE = 15,
+    DOCTOR_PHASE = 5,
     DAY_PHASE = 3,
     DISCUSS_PHASE = 6,
     VOTE_PHASE = 6,
@@ -144,9 +144,10 @@ abstract class MafiaPhaseUtils {
         }
     }
 
-    public static isNeededPhase(phaseName: MafiaPhaseName, rolesCollection: Array<any>): boolean {
+    public static isNeededPhase(phaseName: MafiaPhaseName, rolesCollection: Array<MafiaRole>): boolean {
         const activeRoles = this.getActiveRolesByPhaseName(phaseName);
-        return MafiaSupportUtils.isIntersected(activeRoles, rolesCollection) || this.isModeratorPhase(phaseName);
+        activeRoles.splice(activeRoles.indexOf(MafiaRole.DEAD), 1);
+        return MafiaGeneralUtils.isIntersected(activeRoles, rolesCollection) || this.isModeratorPhase(phaseName);
     }
 
     public static isModeratorPhase(phaseName: MafiaPhaseName): boolean {

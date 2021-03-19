@@ -1,5 +1,5 @@
 import { InvalidNumberOfPlayers, RoomErrorMessage } from '../errors/MafiaRoomErrors';
-import MafiaSupportUtils from './MafiaSupportUtils';
+import MafiaGeneralUtils from './MafiaGeneralUtils';
 
 export enum MafiaRole {
     MAFIA = 'MAFIA',
@@ -60,6 +60,10 @@ abstract class MafiaRoleUtils {
         return role === MafiaRole.DETECTOR;
     }
 
+    public static isDead(role: MafiaRole): boolean {
+        return role === MafiaRole.DEAD;
+    }
+
     public static createStandardGameRolesCollection(numberOfPlayers: number): Array<MafiaRole> {
         if (this.isValidNumberOfPlayers(numberOfPlayers)) {
             const numberOfMafia = this.getNumberOfMafia(numberOfPlayers);
@@ -81,7 +85,7 @@ abstract class MafiaRoleUtils {
 
     public static createShuffledGameRolesCollection(numberOfPlayers: number): Array<MafiaRole> {
         const shuffledGameRolesCollection = this.createStandardGameRolesCollection(numberOfPlayers);
-        MafiaSupportUtils.shuffleCollections(shuffledGameRolesCollection);
+        MafiaGeneralUtils.shuffleCollections(shuffledGameRolesCollection);
         return shuffledGameRolesCollection;
     }
 

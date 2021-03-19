@@ -4,6 +4,7 @@ import { MafiaPhaseAction, MafiaPhasesActionLimit } from '../../utils/MafiaPhase
 import MafiaPlayer from '../clients/MafiaPlayer';
 import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import { IVoteActionPayload } from '../payloads/actionsPayload';
 
 class VoteActions extends AbstractActions {
     private kickVoteActionLimit: MapSchema<number>;
@@ -22,7 +23,11 @@ class VoteActions extends AbstractActions {
     public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.KICK_VOTE:
-                this.voteAction(player, payload.playerId);
+                this.voteAction(player, payload);
+                break;
+
+            case MafiaPhaseAction.MESSAGE_TO_DEAD:
+                this.messageToDead(player, payload);
                 break;
 
             default:
@@ -30,17 +35,17 @@ class VoteActions extends AbstractActions {
         }
     }
 
-    public voteAction(player: MafiaPlayer, playerId: string): void {
+    public voteAction(player: MafiaPlayer, payload: IVoteActionPayload): void {
         if (!MafiaRoleUtils.isAlivePlayer(player.getRole())) {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
-        } else if (!this.isPlayerExist(playerId)) {
+        } else if (!this.isPlayerExist(payload.playerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
         } else if (this.hasReachKickVoteLimits(player.getSessionId())) {
             throw new InvalidPhaseAction(RoomErrorMessage.HAS_REACH_ACTION_LIMITS);
         } else {
             const kickVoteLimit = this.kickVoteActionLimit.get(player.getSessionId());
             this.kickVoteActionLimit.set(player.getSessionId(), kickVoteLimit + 1);
-            this.kickVotes.push(playerId);
+            this.kickVotes.push(payload.playerId);
         }
     }
 

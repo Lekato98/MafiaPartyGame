@@ -4,11 +4,9 @@ import { MafiaPlayer } from './clients/MafiaPlayer';
 import { MafiaSpectator } from './clients/MafiaSpectator';
 import MafiaGameState from './MafiaGameState';
 import {
-    GameAlreadyStarted,
     InvalidClientType,
     RoomError,
     RoomErrorMessage,
-    RoomIsFull,
 } from '../errors/MafiaRoomErrors';
 import { ClientOptions } from '../MafiaRoom';
 
@@ -42,12 +40,12 @@ class MafiaRoomState extends Schema {
 
     public join(client: Client, clientOptions: ClientOptions): void {
         if (this.isFull(clientOptions.jointType)) {
-            throw new RoomIsFull(RoomErrorMessage.ROOM_IS_FULL);
+            throw new RoomError(RoomErrorMessage.ROOM_IS_FULL);
         } else {
             switch (clientOptions.jointType) {
                 case MafiaRoomStateEnum.PLAYER:
                     if (this.gameState.isGameStarted()) {
-                        throw new GameAlreadyStarted(RoomErrorMessage.GAME_ALREADY_STARTED);
+                        throw new RoomError(RoomErrorMessage.GAME_ALREADY_STARTED);
                     } else {
                         this.players.push(new MafiaPlayer(client, clientOptions.username));
                         this.numberOfPlayers++;

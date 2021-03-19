@@ -28,12 +28,19 @@ class DayPhase extends AbstractPhase {
         });
 
         if (playerToKill !== playerToProtect && playerToKill !== '') {
-            const players = this.context.players.map(player => player.getSessionId());
-            const killedPlayerIndex = players.indexOf(playerToKill);
-            const killedPlayer = this.context.players[killedPlayerIndex];
+            const killedPlayer = this.context.players.find(player => player.getSessionId() === playerToKill);
+            const playerRole = killedPlayer.getRole();
+
+            // replace player role in roles collection to dead
+            this.context.replaceOneRoleInRolesCollection(playerRole, MafiaRole.DEAD);
+
             killedPlayer.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.YOU_WERE_KILLED);
             killedPlayer.setRole(MafiaRole.DEAD);
         }
+    }
+
+    public onEnd() {
+        this.context.phaseActionsResult.clear();
     }
 
     refreshDayPhase(): void {

@@ -11,7 +11,6 @@ class NightPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
-        this.context.phaseActionsResult.clear();
     }
 
     refreshNightPhase() {

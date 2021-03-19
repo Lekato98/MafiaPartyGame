@@ -1,13 +1,4 @@
-import { ArraySchema } from '@colyseus/schema';
-
-// @TODO Change class name
-abstract class MafiaSupportUtils {
-    public static convertArrayToArraySchema(collection: Array<any>): ArraySchema {
-        const arraySchema = new ArraySchema();
-        collection.map(item => arraySchema.push(item));
-        return arraySchema;
-    }
-
+abstract class MafiaGeneralUtils {
     public static isIntersected(collectionA: Array<any>, collectionB: Array<any>): boolean {
         const intersection = collectionA.filter(item => collectionB.includes(item));
         return intersection.length !== 0;
@@ -21,7 +12,6 @@ abstract class MafiaSupportUtils {
 
         // While there remain elements to shuffle...
         while (0 !== currentIndex) {
-
             // Pick a remaining element...
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex -= 1;
@@ -34,4 +24,4 @@ abstract class MafiaSupportUtils {
     }
 }
 
-export default MafiaSupportUtils;
+export default MafiaGeneralUtils;

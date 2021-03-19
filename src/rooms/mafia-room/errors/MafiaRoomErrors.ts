@@ -1,8 +1,6 @@
 export enum RoomErrorName {
-    ROOM_IS_FULL = 'RoomIsFull',
     INVALID_NUMBER_OF_PLAYERS = 'InvalidNumberOfPlayers',
     INVALID_CLIENT_TYPE = 'InvalidClientType',
-    GAME_ALREADY_STARTED = 'GameAlreadyStarted',
     INVALID_PHASE_NAME = 'InvalidPhaseName',
     INVALID_PHASE_ACTION = 'InvalidPhaseAction',
     ROOM_ERROR = 'RoomError',
@@ -25,6 +23,7 @@ export enum RoomErrorMessage {
     INVALID_ROLE_ACTION_CALL = 'ROLE IS INVALID TO CALL CURRENT ACTION',
     UNKNOWN_PLAYER = 'UNKNOWN PLAYER',
     ACTION_ON_UNKNOWN_PLAYER = 'TRYING TO DO SOMETHING TO UNKNOWN PLAYER',
+    INVALID_REPLACE_UNAVAILABLE_ROLE = 'TRYING TO REPLACE UNAVAILABLE ROLE',
 }
 
 export class RoomError extends Error {
@@ -33,23 +32,10 @@ export class RoomError extends Error {
 
     constructor(message?: string, code?: number) {
         super(message);
-        Object.setPrototypeOf(this, RoomIsFull.prototype);
+        Object.setPrototypeOf(this, RoomError.prototype);
 
         this.code = code;
         this.name = RoomErrorName.ROOM_ERROR;
-    }
-}
-
-export class RoomIsFull extends Error {
-    readonly code: number;
-    readonly name: string;
-
-    constructor(message?: string, code?: number) {
-        super(message);
-        Object.setPrototypeOf(this, RoomIsFull.prototype);
-
-        this.code = code;
-        this.name = RoomErrorName.ROOM_IS_FULL;
     }
 }
 
@@ -76,19 +62,6 @@ export class InvalidClientType extends Error {
 
         this.code = code;
         this.name = RoomErrorName.INVALID_CLIENT_TYPE;
-    }
-}
-
-export class GameAlreadyStarted extends Error {
-    readonly code: number;
-    readonly name: string;
-
-    constructor(message?: string, code?: number) {
-        super(message);
-        Object.setPrototypeOf(this, GameAlreadyStarted.prototype);
-
-        this.code = code;
-        this.name = RoomErrorName.GAME_ALREADY_STARTED;
     }
 }
 
