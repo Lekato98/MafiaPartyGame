@@ -24,7 +24,7 @@ class DoctorActions extends AbstractActions {
         );
     }
 
-    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
+    public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.DOCTOR_PROTECT_ONE:
                 this.protectAction(player, payload);

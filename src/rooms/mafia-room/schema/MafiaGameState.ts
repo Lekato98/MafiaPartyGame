@@ -4,7 +4,7 @@ import AbstractPhase from './phases/AbstractPhase';
 import NightPhase from './phases/NightPhase';
 import MafiaRoleUtils, { MafiaRole } from '../utils/MafiaRoleUtils';
 import MafiaPlayer from './clients/MafiaPlayer';
-import { MafiaRoomMessageType } from '../MafiaRoom';
+import { IActionName, MafiaRoomMessageType } from '../MafiaRoom';
 import { RoomError, RoomErrorMessage } from '../errors/MafiaRoomErrors';
 import { MafiaRoomStateEnum } from './MafiaRoomState';
 import { MafiaPhaseName } from '../utils/MafiaPhaseUtils';
@@ -88,6 +88,10 @@ class MafiaGameState extends Schema {
     public endGame(): void {
         this.stopPhaseLifeCycle();
         this.gameOver = true;
+    }
+
+    public onAction(client: Client, payload: IActionName): void {
+        this.phase.onAction(client, payload.actionName, payload);
     }
 
     public replaceOneRoleInRolesCollection(roleToReplace: MafiaRole, newRole: MafiaRole): void {

@@ -22,7 +22,7 @@ class MafiaActions extends AbstractActions {
         );
     }
 
-    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
+    public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.MAFIA_KILL_VOTE:
                 this.killVoteAction(player, payload);

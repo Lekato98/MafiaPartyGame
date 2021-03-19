@@ -20,7 +20,7 @@ class VoteActions extends AbstractActions {
         );
     }
 
-    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
+    public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.KICK_VOTE:
                 this.voteAction(player, payload);

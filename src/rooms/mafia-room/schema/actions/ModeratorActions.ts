@@ -8,7 +8,7 @@ class ModeratorActions extends AbstractActions {
         super();
     }
 
-    doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
+    onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
     }
 }
 

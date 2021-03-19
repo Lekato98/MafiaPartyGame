@@ -35,14 +35,14 @@ abstract class AbstractPhase extends Schema {
         this.context.setCurrentPhaseByName(nextPhase);
     }
 
-    public doAction(client: Client, action: MafiaPhaseAction, payload: IActionName): void {
+    public onAction(client: Client, action: MafiaPhaseAction, payload: IActionName): void {
         const player = this.context.getPlayerBySessionId(client.sessionId);
         if (!this.isValidAction(action)) {
             throw new InvalidPhaseAction(RoomErrorMessage.UNKNOWN_ACTION_NAME);
         } else if (!this.isValidRole(player.getRole())) {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
         } else {
-            this.actions.doAction(player, action, payload);
+            this.actions.onAction(player, action, payload);
         }
     }
 

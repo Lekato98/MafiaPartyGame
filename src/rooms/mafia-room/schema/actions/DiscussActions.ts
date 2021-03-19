@@ -10,7 +10,7 @@ class DiscussActions extends AbstractActions {
         super();
     }
 
-    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
+    public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.MESSAGE_TO_ALL:
                 this.messageToAllAction(player, payload);

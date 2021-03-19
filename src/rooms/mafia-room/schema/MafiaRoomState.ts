@@ -8,7 +8,7 @@ import {
     RoomError,
     RoomErrorMessage,
 } from '../errors/MafiaRoomErrors';
-import { ClientOptions } from '../MafiaRoom';
+import { IClientOptions } from '../MafiaRoom';
 
 export enum MafiaRoomStateEnum {
     PLAYER = 'PLAYER',
@@ -38,7 +38,7 @@ class MafiaRoomState extends Schema {
         this.refreshMafiaRoomState();
     }
 
-    public join(client: Client, clientOptions: ClientOptions): void {
+    public join(client: Client, clientOptions: IClientOptions): void {
         if (this.isFull(clientOptions.jointType)) {
             throw new RoomError(RoomErrorMessage.ROOM_IS_FULL);
         } else {

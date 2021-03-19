@@ -20,7 +20,7 @@ abstract class AbstractActions extends Schema {
     @type('string') readonly emptyString: string = 'empty';
     players: ArraySchema<MafiaPlayer>;
 
-    abstract doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: IActionName): void;
+    abstract onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: IActionName): void;
 
     public messageToDead(player: MafiaPlayer, payload: IMessageToDeadAction) {
         if (MafiaRoleUtils.isDead(player.getRole())) {

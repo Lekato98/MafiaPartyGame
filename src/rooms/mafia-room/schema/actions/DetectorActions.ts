@@ -17,7 +17,7 @@ class DetectorActions extends AbstractActions {
             && this.detectActionLimit.set(player.getSessionId(), 0));
     }
 
-    public doAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
+    public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.DETECTOR_DETECT_ONE:
                 this.detectAction(player, payload);

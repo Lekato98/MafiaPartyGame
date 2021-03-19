@@ -23,7 +23,7 @@ export interface IActionName {
     actionName: MafiaPhaseAction,
 }
 
-export interface ClientOptions {
+export interface IClientOptions {
     username: string,
     jointType: string, // PLAYER, SPECTATOR
 }
@@ -43,7 +43,7 @@ class MafiaRoom extends Room {
         // events
         this.onMessage(MafiaRoomMessageType.ACTION, (client: Client, payload: IActionName) => {
             try {
-                this.state.gameState.phase.doAction(client, payload.actionName, payload);
+                this.state.gameState.onAction(client, payload);
             } catch (err) {
                 client.send(MafiaRoomMessageType.ERROR, err.message);
             }
@@ -60,11 +60,11 @@ class MafiaRoom extends Room {
         LogsUtils.CREATED(this.ROOM_NAME);
     }
 
-    onAuth(client: Client, clientOptions: ClientOptions, request?: http.IncomingMessage): any {
+    onAuth(client: Client, clientOptions: IClientOptions, request?: http.IncomingMessage): any {
         return 'token';
     }
 
-    onJoin(client: Client, clientOptions?: ClientOptions, auth?: any): void | Promise<any> {
+    onJoin(client: Client, clientOptions?: IClientOptions, auth?: any): void | Promise<any> {
         try {
             this.state.join(client, clientOptions);
             LogsUtils.JOINED(this.ROOM_NAME);
