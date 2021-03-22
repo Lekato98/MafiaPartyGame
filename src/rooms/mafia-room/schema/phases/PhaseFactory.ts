@@ -9,6 +9,7 @@ import DiscussPhase from './DiscussPhase';
 import VotePhase from './VotePhase';
 import { MafiaPhaseName } from '../../utils/MafiaPhaseUtils';
 import { InvalidPhaseName, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import DefensePhase from './DefensePhase';
 
 class PhaseFactory {
     public static createPhase(phaseType: MafiaPhaseName, context: MafiaGameState): AbstractPhase {
@@ -33,6 +34,9 @@ class PhaseFactory {
 
             case MafiaPhaseName.VOTE_PHASE:
                 return new VotePhase(context);
+
+            case MafiaPhaseName.DEFENSE_PHASE:
+                return new DefensePhase(context);
 
             default:
                 throw new InvalidPhaseName(RoomErrorMessage.UNKNOWN_PHASE_NAME);

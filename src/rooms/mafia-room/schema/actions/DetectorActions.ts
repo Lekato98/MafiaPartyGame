@@ -14,7 +14,7 @@ class DetectorActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
         this.players.forEach(player => MafiaRoleUtils.isDetector(player.getRole())
-            && this.detectActionLimit.set(player.getSessionId(), 0));
+            && this.detectActionLimit.set(player.getId(), 0));
     }
 
     public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
@@ -35,15 +35,15 @@ class DetectorActions extends AbstractActions {
     public detectAction(player: MafiaPlayer, payload: IDetectPayload): void {
         if (!MafiaRoleUtils.isDetector(player.getRole())) {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
-        }else if (this.hasReachDetectActionLimit(player.getSessionId())) {
+        }else if (this.hasReachDetectActionLimit(player.getId())) {
             throw new InvalidPhaseAction(RoomErrorMessage.HAS_REACH_ACTION_LIMITS);
         } else if (!this.isPlayerExist(payload.detectPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
-        } else if (this.isDetectingHimself(player.getSessionId(), payload.detectPlayerId)) {
+        } else if (this.isDetectingHimself(player.getId(), payload.detectPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.DETECTOR_DETECT_HIMSELF);
         } else {
             const detectedPlayer: MafiaPlayer = this.players.find(player =>
-                player.getSessionId() === payload.detectPlayerId
+                player.getId() === payload.detectPlayerId
             );
             const detectResult = new DetectActionResult(payload.detectPlayerId, detectedPlayer.getRole());
             player.send(MafiaRoomMessageType.MODERATOR, detectResult);
@@ -52,10 +52,6 @@ class DetectorActions extends AbstractActions {
 
     public isDetectingHimself(sessionId: string, detectedSessionId: string): boolean {
         return sessionId === detectedSessionId;
-    }
-
-    public isPlayerExist(sessionId: string): boolean {
-        return this.players.map(player => player.getSessionId()).includes(sessionId);
     }
 
     public hasReachDetectActionLimit(sessionId: string): boolean {

@@ -13,8 +13,8 @@ class DayPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
-        let playerToKill = '';
-        let playerToProtect = '';
+        let playerToKill: string = '';
+        let playerToProtect: string = '';
         this.context.phaseActionsResult.forEach(payload => {
             switch (payload.actionName) {
                 case MafiaPhaseAction.MAFIA_KILL_VOTE:
@@ -28,7 +28,7 @@ class DayPhase extends AbstractPhase {
         });
 
         if (playerToKill !== playerToProtect && playerToKill !== '') {
-            const killedPlayer = this.context.players.find(player => player.getSessionId() === playerToKill);
+            const killedPlayer = this.context.players.find(player => player.getId() === playerToKill);
             const playerRole = killedPlayer.getRole();
 
             // replace player role in roles collection to dead
@@ -39,13 +39,13 @@ class DayPhase extends AbstractPhase {
         }
     }
 
-    public onEnd() {
+    public onEnd(): void {
         this.context.phaseActionsResult.clear();
     }
 
     refreshDayPhase(): void {
-        this.phaseName = MafiaPhaseName.DAY_PHASE;
-        this.phaseTime = MafiaPhaseTime.DAY_PHASE;
+        this.name = MafiaPhaseName.DAY_PHASE;
+        this.time = MafiaPhaseTime.DAY_PHASE;
         this.actionsName = MafiaActionsName.MODERATOR_ACTIONS;
         this.refreshPhase();
     }

@@ -1,7 +1,6 @@
 import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { Client } from 'colyseus';
 import AbstractPhase from './phases/AbstractPhase';
-import NightPhase from './phases/NightPhase';
 import MafiaRoleUtils, { MafiaRole } from '../utils/MafiaRoleUtils';
 import MafiaPlayer from './clients/MafiaPlayer';
 import { IActionName, MafiaRoomMessageType } from '../MafiaRoom';
@@ -11,6 +10,7 @@ import { MafiaPhaseName } from '../utils/MafiaPhaseUtils';
 import PhasesFactory from './phases/PhaseFactory';
 import { AbstractActionResult } from './results/actionResults';
 import ColyseusUtils from '../../../colyseus/utils/ColyseusUtils';
+import DayPhase from './phases/DayPhase';
 
 class MafiaGameState extends Schema {
     @type(AbstractPhase) public phase: AbstractPhase;
@@ -70,7 +70,7 @@ class MafiaGameState extends Schema {
 
     public fixGameLeader(): void {
         if (this.players.length) {
-            this.setGameLeader(this.players[0].getSessionId());
+            this.setGameLeader(this.players[0].getId());
         } else {
             this.setGameLeader(MafiaRoomStateEnum.DEFAULT_GAME_LEADER);
         }
@@ -141,10 +141,11 @@ class MafiaGameState extends Schema {
         return this.rolesCollection;
     }
 
-    public getPlayerBySessionId(sessionId: string): MafiaPlayer {
+    public getPlayerById(playerId: string): MafiaPlayer {
         const player: MafiaPlayer = this.players.find(
-            player => player.getSessionId() === sessionId,
+            player => player.getId() === playerId,
         );
+
         if (player) {
             return player;
         } else {
@@ -155,8 +156,9 @@ class MafiaGameState extends Schema {
     public refreshMafiaGameState(): void {
         this.gameStarted = false;
         this.gameOver = false;
+        this.rolesCollection = new ArraySchema<MafiaRole>();
         this.gameLeader = MafiaRoomStateEnum.DEFAULT_GAME_LEADER;
-        this.phase = new NightPhase(this);
+        this.phase = new DayPhase(this);
         this.phaseActionsResult = new ArraySchema<AbstractActionResult>();
     }
 }

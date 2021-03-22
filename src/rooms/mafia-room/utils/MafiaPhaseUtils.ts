@@ -10,16 +10,18 @@ export enum MafiaPhaseName {
     DAY_PHASE = 'DAY',
     DISCUSS_PHASE = 'DISCUSS',
     VOTE_PHASE = 'VOTE',
+    DEFENSE_PHASE = 'DEFENSE',
 }
 
 export enum MafiaPhaseTime { // time in seconds
     NIGHT_PHASE = 3,
-    MAFIA_PHASE = 10,
-    DETECTOR_PHASE = 15,
-    DOCTOR_PHASE = 5,
+    MAFIA_PHASE = 3,
+    DETECTOR_PHASE = 3,
+    DOCTOR_PHASE = 3,
     DAY_PHASE = 3,
-    DISCUSS_PHASE = 6,
-    VOTE_PHASE = 6,
+    DISCUSS_PHASE = 3,
+    VOTE_PHASE = 7,
+    DEFENSE_PHASE = 3,
 }
 
 abstract class MafiaPhaseUtils {
@@ -31,6 +33,7 @@ abstract class MafiaPhaseUtils {
         MafiaPhaseName.DAY_PHASE, // All wake up
         MafiaPhaseName.DISCUSS_PHASE,
         MafiaPhaseName.VOTE_PHASE,
+        MafiaPhaseName.DEFENSE_PHASE,
     ];
 
     private static readonly STANDARD_ACTIVE_ROLES_NIGHT_PHASE: Array<MafiaRole> = [
@@ -69,6 +72,14 @@ abstract class MafiaPhaseUtils {
     ];
 
     private static readonly STANDARD_ACTIVE_ROLES_VOTE_PHASE: Array<MafiaRole> = [
+        MafiaRole.MAFIA,
+        MafiaRole.DETECTOR,
+        MafiaRole.INNOCENT,
+        MafiaRole.DOCTOR,
+        MafiaRole.DEAD,
+    ];
+
+    private static readonly STANDARD_ACTIVE_ROLES_DEFENSE_PHASE: Array<MafiaRole> = [
         MafiaRole.MAFIA,
         MafiaRole.DETECTOR,
         MafiaRole.INNOCENT,
@@ -116,6 +127,10 @@ abstract class MafiaPhaseUtils {
         return [...this.STANDARD_ACTIVE_ROLES_VOTE_PHASE];
     }
 
+    public static getActiveRolesDefensePhase(): Array<MafiaRole> {
+        return [...this.STANDARD_ACTIVE_ROLES_DEFENSE_PHASE];
+    }
+
     public static getActiveRolesByPhaseName(phaseName: MafiaPhaseName): Array<MafiaRole> {
         switch (phaseName) {
             case MafiaPhaseName.NIGHT_PHASE:
@@ -139,6 +154,9 @@ abstract class MafiaPhaseUtils {
             case MafiaPhaseName.VOTE_PHASE:
                 return this.getActiveRolesVotePhase();
 
+            case MafiaPhaseName.DEFENSE_PHASE:
+                return this.getActiveRolesDefensePhase();
+
             default:
                 throw new InvalidPhaseName(RoomErrorMessage.UNKNOWN_PHASE_NAME);
         }
@@ -147,7 +165,13 @@ abstract class MafiaPhaseUtils {
     public static isNeededPhase(phaseName: MafiaPhaseName, rolesCollection: Array<MafiaRole>): boolean {
         const activeRoles = this.getActiveRolesByPhaseName(phaseName);
         activeRoles.splice(activeRoles.indexOf(MafiaRole.DEAD), 1);
-        return MafiaGeneralUtils.isIntersected(activeRoles, rolesCollection) || this.isModeratorPhase(phaseName);
+        return !this.isDefensePhase(phaseName)
+            && (MafiaGeneralUtils.isIntersected(activeRoles, rolesCollection)
+                || this.isModeratorPhase(phaseName));
+    }
+
+    public static isDefensePhase(phaseName: MafiaPhaseName): boolean {
+        return phaseName === MafiaPhaseName.DEFENSE_PHASE;
     }
 
     public static isModeratorPhase(phaseName: MafiaPhaseName): boolean {

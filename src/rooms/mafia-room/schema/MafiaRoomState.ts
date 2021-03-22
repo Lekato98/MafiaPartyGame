@@ -80,7 +80,7 @@ class MafiaRoomState extends Schema {
     }
 
     public removeClient(clientsList: ArraySchema, sessionId: string): void {
-        const indexToRemove = clientsList.findIndex(client => client.getSessionId() === sessionId);
+        const indexToRemove = clientsList.findIndex(client => client.getId() === sessionId);
 
         if (indexToRemove !== -1) {
             this.clientJointType.delete(sessionId);

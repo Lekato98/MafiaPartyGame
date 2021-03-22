@@ -20,7 +20,7 @@ class DoctorActions extends AbstractActions {
         this.protectVoteActionLimit = new MapSchema<number>();
         this.players.forEach((player: MafiaPlayer) =>
             player.getRole() === MafiaRole.MAFIA
-            && this.protectVoteActionLimit.set(player.getSessionId(), 0), // 0 initial value
+            && this.protectVoteActionLimit.set(player.getId(), 0), // 0 initial value
         );
     }
 
@@ -44,7 +44,7 @@ class DoctorActions extends AbstractActions {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
         } else if (!this.isPlayerExist(payload.protectPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
-        } else if (this.isDoctorProtectingHimself(player.getSessionId(), payload.protectPlayerId)) {
+        } else if (this.isDoctorProtectingHimself(player.getId(), payload.protectPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.DOCTOR_PROTECT_HIMSELF);
         } else {
             this.setProtectedPlayer(payload.protectPlayerId);
@@ -59,10 +59,6 @@ class DoctorActions extends AbstractActions {
         return sessionId === playerId;
     }
 
-    public isPlayerExist(sessionId: string): boolean {
-        return this.players.map(player => player.getSessionId()).includes(sessionId);
-    }
-
     public getResult(): ArraySchema<AbstractActionResult> {
         const result = new ArraySchema<AbstractActionResult>();
         if (this.protectedPlayer !== '') {
@@ -75,7 +71,7 @@ class DoctorActions extends AbstractActions {
 
     public getProtectResult(): AbstractActionResult {
         const protectActionResult = new ProtectActionResult();
-        protectActionResult.playerId = ColyseusUtils.getMaxOccurrenceInMapSchema(this.protectVotes);
+        protectActionResult.playerId = ColyseusUtils.getMaxOccurrenceInMapSchema(this.protectVotes).key;
 
         return protectActionResult;
     }

@@ -55,6 +55,12 @@ class MafiaPhaseActionUtils {
         MafiaPhaseAction.KICK_VOTE,
     ];
 
+    public static readonly ACTIVE_ACTIONS_DEFENSE: Array<MafiaPhaseAction> = [
+        MafiaPhaseAction.MESSAGE_TO_ALL,
+        MafiaPhaseAction.GUILTY_VOTE,
+        MafiaPhaseAction.INNOCENT_VOTE,
+    ];
+
     public static getActiveActionsByPhaseName(phaseName: MafiaPhaseName): Array<MafiaPhaseAction> {
         switch (phaseName) {
             case MafiaPhaseName.NIGHT_PHASE:
@@ -77,6 +83,9 @@ class MafiaPhaseActionUtils {
 
             case MafiaPhaseName.VOTE_PHASE:
                 return this.ACTIVE_ACTIONS_VOTE;
+
+            case MafiaPhaseName.DEFENSE_PHASE:
+                return this.ACTIVE_ACTIONS_DEFENSE;
 
             default:
                 throw new InvalidPhaseName(RoomErrorMessage.UNKNOWN_PHASE_NAME);

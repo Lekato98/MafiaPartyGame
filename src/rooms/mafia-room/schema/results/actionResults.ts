@@ -1,7 +1,6 @@
 import { Schema } from '@colyseus/schema';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import { MafiaRole } from '../../utils/MafiaRoleUtils';
-import supports = CSS.supports;
 
 export abstract class AbstractActionResult extends Schema {
     public actionName: MafiaPhaseAction;
@@ -9,6 +8,8 @@ export abstract class AbstractActionResult extends Schema {
 }
 
 export class ProtectActionResult extends AbstractActionResult {
+    public readonly actionName: MafiaPhaseAction;
+
     constructor() {
         super();
         this.actionName = MafiaPhaseAction.DOCTOR_PROTECT_ONE;
@@ -17,9 +18,21 @@ export class ProtectActionResult extends AbstractActionResult {
 }
 
 export class VoteKillActionResult extends AbstractActionResult {
+    public readonly actionName: MafiaPhaseAction;
+
     constructor() {
         super();
         this.actionName = MafiaPhaseAction.MAFIA_KILL_VOTE;
+        this.playerId = '';
+    }
+}
+
+export class VoteKickActionResult extends AbstractActionResult {
+    public readonly actionName: MafiaPhaseAction;
+
+    constructor() {
+        super();
+        this.actionName = MafiaPhaseAction.KICK_VOTE;
         this.playerId = '';
     }
 }

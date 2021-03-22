@@ -1,11 +1,12 @@
 import AbstractPhase from './AbstractPhase';
 import MafiaGameState from '../MafiaGameState';
 import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
-import { AbstractActionResult, MafiaActionsName } from '../actions/AbstractActions';
+import { MafiaActionsName } from '../actions/AbstractActions';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { MafiaRoomMessage, MafiaRoomMessageType } from '../../MafiaRoom';
 import { ArraySchema } from '@colyseus/schema';
+import { AbstractActionResult } from '../results/actionResults';
 
 class DoctorPhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
@@ -25,8 +26,8 @@ class DoctorPhase extends AbstractPhase {
     }
 
     refreshDoctorPhase(): void {
-        this.phaseName = MafiaPhaseName.DOCTOR_PHASE;
-        this.phaseTime = MafiaPhaseTime.DOCTOR_PHASE;
+        this.name = MafiaPhaseName.DOCTOR_PHASE;
+        this.time = MafiaPhaseTime.DOCTOR_PHASE;
         this.actionsName = MafiaActionsName.DOCTOR_ACTIONS;
         this.refreshPhase();
     }

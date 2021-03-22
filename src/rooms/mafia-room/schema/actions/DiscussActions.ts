@@ -24,10 +24,6 @@ class DiscussActions extends AbstractActions {
                 throw new InvalidPhaseAction(RoomErrorMessage.INVALID_PHASE_ACTION);
         }
     }
-
-    public messageToAllAction(player: MafiaPlayer, payload: IMessageToAllPayload) {
-        this.players.forEach(player => player.send(MafiaPhaseAction.MESSAGE_TO_ALL, payload.message));
-    }
 }
 
 export default DiscussActions;

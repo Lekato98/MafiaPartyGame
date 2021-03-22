@@ -13,15 +13,18 @@ class DetectorPhase extends AbstractPhase {
         this.onBegin();
     }
 
-    public onBegin() {
+    public onBegin(): void {
         this.context.players.forEach((player: MafiaPlayer) => player.getRole() === MafiaRole.DETECTOR
             && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.DETECTOR_TO_DETECT),
         );
     }
 
+    public onEnd(): void {
+    }
+
     refreshDetectorPhase(): void {
-        this.phaseName = MafiaPhaseName.DETECTOR_PHASE;
-        this.phaseTime = MafiaPhaseTime.DETECTOR_PHASE;
+        this.name = MafiaPhaseName.DETECTOR_PHASE;
+        this.time = MafiaPhaseTime.DETECTOR_PHASE;
         this.actionsName = MafiaActionsName.DETECTOR_ACTIONS;
         this.refreshPhase();
     }

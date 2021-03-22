@@ -1,8 +1,8 @@
-import * as Colyseus from "colyseus";
-import MafiaRoom from "../rooms/mafia-room/MafiaRoom";
+import * as Colyseus from 'colyseus';
+import MafiaRoom from '../rooms/mafia-room/MafiaRoom';
 
 export enum RoomName {
-    MAFIA = 'Mafia'
+    MAFIA = 'Mafia',
 }
 
 abstract class ColyseusServer {
@@ -12,7 +12,7 @@ abstract class ColyseusServer {
         const colyseusServer = new Colyseus.Server(options);
         colyseusServer.define(RoomName.MAFIA, MafiaRoom).sortBy({clients: 1});
         colyseusServer.listen(this.PORT)
-            .then(() => console.log(`listing on ${this.PORT}`));
+            .then(() => console.log(`listing on ${ this.PORT }`));
 
         return colyseusServer;
     }

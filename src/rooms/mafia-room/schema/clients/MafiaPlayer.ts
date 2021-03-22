@@ -4,13 +4,13 @@ import { Client } from 'colyseus';
 import { ISendOptions } from 'colyseus/lib/transport/Transport';
 
 export class MafiaPlayer extends Schema {
-    @type('string') private readonly sessionId: string;
+    @type('string') private readonly id: string;
     @type('string') private readonly username: string;
     @type('string') private role: MafiaRole;
 
     constructor(private readonly client: Client, username: string) {
         super();
-        this.sessionId = client.sessionId;
+        this.id = client.sessionId;
         this.username = username;
         this.client = client;
     }
@@ -19,8 +19,8 @@ export class MafiaPlayer extends Schema {
         this.client.send(type, message);
     }
 
-    public getSessionId(): string {
-        return this.sessionId;
+    public getId(): string {
+        return this.id;
     }
 
     public getUsername(): string {

@@ -8,6 +8,7 @@ import VoteActions from './VoteActions';
 import MafiaActions from './MafiaActions';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import ModeratorActions from './ModeratorActions';
+import DefenseActions from './DefenseActions';
 
 abstract class ActionsFactory {
     public static createActions(action: MafiaActionsName, players: ArraySchema<MafiaPlayer>) {
@@ -26,6 +27,9 @@ abstract class ActionsFactory {
 
             case MafiaActionsName.VOTE_ACTIONS:
                 return new VoteActions(players);
+
+            case MafiaActionsName.DEFENSE_ACTIONS:
+                return new DefenseActions(players);
 
             case MafiaActionsName.MODERATOR_ACTIONS:
                 return new ModeratorActions(players);

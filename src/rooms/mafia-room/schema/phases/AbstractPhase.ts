@@ -12,31 +12,22 @@ import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 
 abstract class AbstractPhase extends Schema {
     public readonly context: MafiaGameState;
-    @type('uint8') public phaseTime: MafiaPhaseTime;
-    @type('string') public phaseName: MafiaPhaseName;
+    public nextPhase: MafiaPhaseName;
+
+    @type('uint8') public time: MafiaPhaseTime;
+    @type('string') public name: MafiaPhaseName;
     @type('string') public actionsName: MafiaActionsName;
 
     @type(['string']) public activeRoles: ArraySchema<MafiaRole>;
     @type(['uint8']) public activeActions: ArraySchema<MafiaPhaseAction>;
     @type(AbstractActions) public actions: AbstractActions;
 
-    public onBegin(): void {
-    }
+    abstract onBegin(): void;
 
-    public onEnd(): void {
-    }
-
-    public moveToNextPhase(): void {
-        let nextPhase: MafiaPhaseName = MafiaPhaseUtils.getNextPhase(this.phaseName);
-        while (!MafiaPhaseUtils.isNeededPhase(nextPhase, this.context.getRolesCollection())) {
-            nextPhase = MafiaPhaseUtils.getNextPhase(nextPhase);
-        }
-
-        this.context.setCurrentPhaseByName(nextPhase);
-    }
+    abstract onEnd(): void;
 
     public onAction(client: Client, action: MafiaPhaseAction, payload: IActionName): void {
-        const player = this.context.getPlayerBySessionId(client.sessionId);
+        const player = this.context.getPlayerById(client.sessionId);
         if (!this.isValidAction(action)) {
             throw new InvalidPhaseAction(RoomErrorMessage.UNKNOWN_ACTION_NAME);
         } else if (!this.isValidRole(player.getRole())) {
@@ -46,21 +37,29 @@ abstract class AbstractPhase extends Schema {
         }
     }
 
-    public initializeActiveActions(): void {
-        this.activeActions = ColyseusUtils.convertArrayToArraySchema(
-            MafiaPhaseActionUtils.getActiveActionsByPhaseName(this.phaseName)
-                .concat(MafiaPhaseActionUtils.ACTIVE_ACTIONS_ALL),
-        );
+    public moveToNextPhase(): void {
+        this.context.setCurrentPhaseByName(this.nextPhase);
     }
 
-    public initializeActiveRoles(): void {
-        this.activeRoles = ColyseusUtils.convertArrayToArraySchema(
-            MafiaPhaseUtils.getActiveRolesByPhaseName(this.phaseName),
-        );
+    public getNextPhaseByOrder(): MafiaPhaseName {
+        return MafiaPhaseUtils.getNextPhase(this.name);
     }
 
-    public initializeActions(): void {
-        this.actions = ActionsFactory.createActions(this.actionsName, this.context.players);
+    public getNextPhaseOptimal(): MafiaPhaseName {
+        let nextPhase: MafiaPhaseName = MafiaPhaseUtils.getNextPhase(this.name);
+        while (!MafiaPhaseUtils.isNeededPhase(nextPhase, this.context.getRolesCollection())) {
+            nextPhase = MafiaPhaseUtils.getNextPhase(nextPhase);
+        }
+
+        return nextPhase;
+    }
+
+    public getPhaseTime(): MafiaPhaseTime {
+        return this.time;
+    }
+
+    public setNextPhase(nextPhase: MafiaPhaseName): void {
+        this.nextPhase = nextPhase;
     }
 
     public isValidAction(action: MafiaPhaseAction): boolean {
@@ -71,14 +70,28 @@ abstract class AbstractPhase extends Schema {
         return this.activeRoles.includes(role);
     }
 
-    public getPhaseTime(): MafiaPhaseTime {
-        return this.phaseTime;
+    public initializeActiveActions(): void {
+        this.activeActions = ColyseusUtils.convertArrayToArraySchema(
+            MafiaPhaseActionUtils.getActiveActionsByPhaseName(this.name)
+                .concat(MafiaPhaseActionUtils.ACTIVE_ACTIONS_ALL),
+        );
+    }
+
+    public initializeActiveRoles(): void {
+        this.activeRoles = ColyseusUtils.convertArrayToArraySchema(
+            MafiaPhaseUtils.getActiveRolesByPhaseName(this.name),
+        );
+    }
+
+    public initializeActions(): void {
+        this.actions = ActionsFactory.createActions(this.actionsName, this.context.players);
     }
 
     public refreshPhase(): void {
         this.initializeActiveActions();
         this.initializeActiveRoles();
         this.initializeActions();
+        this.setNextPhase(this.getNextPhaseOptimal());
     }
 }
 

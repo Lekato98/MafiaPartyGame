@@ -5,12 +5,12 @@ import MafiaPlayer from '../clients/MafiaPlayer';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { AbstractActionResult, VoteKillActionResult } from '../results/actionResults';
-import { IKillVotePayload, IMessageMafiaPayload } from '../payloads/actionsPayload';
+import { IKillVotePayload, IMessageToMafiaPayload } from '../payloads/actionsPayload';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 
 class MafiaActions extends AbstractActions {
-    private killVoteActionLimit: MapSchema<number>;
-    private killVotes: MapSchema<number>;
+    public killVoteActionLimit: MapSchema<number>;
+    public killVotes: MapSchema<number>;
 
     constructor(readonly players: ArraySchema<MafiaPlayer>) {
         super();
@@ -18,7 +18,7 @@ class MafiaActions extends AbstractActions {
         this.killVoteActionLimit = new MapSchema<number>();
         this.players.forEach((mafiaRolePlayer: MafiaPlayer) =>
             mafiaRolePlayer.getRole() === MafiaRole.MAFIA
-            && this.killVoteActionLimit.set(mafiaRolePlayer.getSessionId(), 0), // 0 initial value
+            && this.killVoteActionLimit.set(mafiaRolePlayer.getId(), 0), // 0 initial value
         );
     }
 
@@ -41,7 +41,7 @@ class MafiaActions extends AbstractActions {
         }
     }
 
-    public messageToMafia(player: MafiaPlayer, payload: IMessageMafiaPayload): void {
+    public messageToMafia(player: MafiaPlayer, payload: IMessageToMafiaPayload): void {
         if (MafiaRoleUtils.isMafia(player.getRole())) {
             this.players.forEach(player =>
                 player.getRole() === MafiaRole.MAFIA
@@ -50,25 +50,24 @@ class MafiaActions extends AbstractActions {
         } else {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
         }
-
     }
 
     public killVoteAction(player: MafiaPlayer, payload: IKillVotePayload): void {
         if (!MafiaRoleUtils.isMafia(player.getRole())) {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
-        } else if (this.hasReachKillVoteLimit(player.getSessionId())) {
+        } else if (this.hasReachKillVoteLimit(player.getId())) {
             throw new InvalidPhaseAction(RoomErrorMessage.HAS_REACH_ACTION_LIMITS);
         } else if (!this.isPlayerExist(payload.voteKillPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
         } else if (this.isKillMafia(payload.voteKillPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.MAFIA_KILL_MAFIA);
-        } else if (this.isKillHimself(player.getSessionId(), payload.voteKillPlayerId)) {
+        } else if (this.isKillHimself(player.getId(), payload.voteKillPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.MAFIA_KILL_HIMSELF);
         } else {
             const preValue: number = this.killVotes.get(payload.voteKillPlayerId) || 0;
             this.killVotes.set(payload.voteKillPlayerId, preValue + 1);
-            const prevKillVoteActionLimit = this.killVoteActionLimit.get(player.getSessionId());
-            this.killVoteActionLimit.set(player.getSessionId(), prevKillVoteActionLimit + 1);
+            const prevKillVoteActionLimit = this.killVoteActionLimit.get(player.getId());
+            this.killVoteActionLimit.set(player.getId(), prevKillVoteActionLimit + 1);
         }
     }
 
@@ -78,10 +77,6 @@ class MafiaActions extends AbstractActions {
 
     public hasReachKillVoteLimit(sessionId: string): boolean {
         return this.killVoteActionLimit.get(sessionId) === MafiaPhasesActionLimit.MAFIA_KILL_VOTE;
-    }
-
-    public isPlayerExist(sessionId: string): boolean {
-        return this.players.findIndex(player => player.getSessionId() === sessionId) !== -1;
     }
 
     public getResult(): ArraySchema<AbstractActionResult> {
@@ -94,13 +89,13 @@ class MafiaActions extends AbstractActions {
 
     public getVoteKillResult(): VoteKillActionResult {
         const voteKillResult = new VoteKillActionResult();
-        voteKillResult.playerId = ColyseusUtils.getMaxOccurrenceInMapSchema(this.killVotes);
+        voteKillResult.playerId = ColyseusUtils.getMaxOccurrenceInMapSchema(this.killVotes).key;
 
         return voteKillResult;
     }
 
     public isKillMafia(voteKillPlayerId: string): boolean {
-        const voteKillPlayerRole = this.players.find(player => player.getSessionId() === voteKillPlayerId).getRole();
+        const voteKillPlayerRole = this.players.find(player => player.getId() === voteKillPlayerId).getRole();
         return MafiaRoleUtils.isMafia(voteKillPlayerRole);
     }
 }

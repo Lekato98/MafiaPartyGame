@@ -1,11 +1,12 @@
 import AbstractPhase from './AbstractPhase';
 import MafiaGameState from '../MafiaGameState';
 import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
-import { AbstractActionResult, MafiaActionsName } from '../actions/AbstractActions';
+import { MafiaActionsName } from '../actions/AbstractActions';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { MafiaRoomMessage, MafiaRoomMessageType } from '../../MafiaRoom';
 import { ArraySchema } from '@colyseus/schema';
+import { AbstractActionResult } from '../results/actionResults';
 
 class MafiaPhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
@@ -13,7 +14,7 @@ class MafiaPhase extends AbstractPhase {
         this.refreshMafiaPhase();
     }
 
-    public onBegin() {
+    public onBegin(): void {
         this.context.players.forEach((player: MafiaPlayer) => player.getRole() === MafiaRole.MAFIA
             && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.MAFIA_TO_KILL),
         );
@@ -25,8 +26,8 @@ class MafiaPhase extends AbstractPhase {
     }
 
     refreshMafiaPhase(): void {
-        this.phaseName = MafiaPhaseName.MAFIA_PHASE;
-        this.phaseTime = MafiaPhaseTime.MAFIA_PHASE;
+        this.name = MafiaPhaseName.MAFIA_PHASE;
+        this.time = MafiaPhaseTime.MAFIA_PHASE;
         this.actionsName = MafiaActionsName.MAFIA_ACTIONS;
         this.refreshPhase();
     }

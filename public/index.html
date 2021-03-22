@@ -37,6 +37,11 @@
         room.send('ACTION', {actionName: 5, protectPlayerId});
     }
 
+    function voteAction(event) {
+        const voteKickPlayerId = window.prompt('sessionId: ');
+        room.send('ACTION', {actionName: 0, playerId: voteKickPlayerId});
+    }
+
     async function createClient() {
         const endPoint = 'ws://localhost:4567';
         const client = new Colyseus.Client(endPoint);
@@ -95,7 +100,7 @@
         const playersDiv = document.querySelector('#players');
         let box = '<hr />';
         state.players.forEach(player => {
-            box += `<div>${player.sessionId}</div>`;
+            box += `<div>${player.id} ${state.gameState.phase.name === 'VOTE' ? state.gameState.phase.actions.kickVotes.get(player.id) : ''}</div>`;
         });
         box += '<hr />';
         playersDiv.innerHTML = box;
@@ -103,7 +108,7 @@
 
     function setMyRole(state) {
         const roleDiv = document.querySelector('#role');
-        const myRole = state.players.filter(player => player.sessionId === room.sessionId)[0].role;
+        const myRole = state.players.filter(player => player.id === room.sessionId)[0].role;
         roleDiv.innerText = myRole || 'No Roles Yet!';
     }
 
@@ -121,9 +126,9 @@
 
     function setStateName(state) {
         const stateDiv = document.querySelector('#state');
-        stateDiv.innerText = state.gameState.phase.phaseName;
+        stateDiv.innerText = state.gameState.phase.name;
 
-        switch (state.gameState.phase.phaseName) {
+        switch (state.gameState.phase.name) {
             case 'MAFIA':
                 actionBtn.onclick = voteKillAction;
                 break;
@@ -132,8 +137,12 @@
                 actionBtn.onclick = protectAction;
                 break;
 
-            case 'DETECTIVE':
+            case 'DETECTOR':
                 actionBtn.onclick = detectAction;
+                break;
+
+            case 'VOTE':
+                actionBtn.onclick = voteAction;
                 break;
         }
     }
@@ -147,7 +156,7 @@
 
     function setCurrentTime(state) {
         const time = document.querySelector('#time');
-        let phaseTime = state.gameState.phase.phaseTime;
+        let phaseTime = state.gameState.phase.time;
         time.innerText = phaseTime;
         const timeInterval = setInterval(() => {
             if (--phaseTime > 0) {
