@@ -16,7 +16,8 @@ export enum MafiaRoomMessage {
     MAFIA_TO_KILL = 'Who do you want to kill?',
     DOCTOR_TO_PROTECT = 'Who do you want to protect?',
     DETECTOR_TO_DETECT = 'Who do you want to know about?',
-    YOU_WERE_KILLED = 'Mafia killed you!'
+    YOU_WERE_KILLED = 'Mafia killed you!',
+    YOU_WERE_EXECUTED = 'Players decides to execute you! ',
 }
 
 export interface IActionName {

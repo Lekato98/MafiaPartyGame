@@ -25,3 +25,11 @@ export interface IKillVotePayload {
 export interface IVoteActionPayload {
     playerId: string;
 }
+
+export interface IGuiltyActionPayload {
+
+}
+
+export interface IInnocentActionPayload {
+
+}

@@ -3,8 +3,9 @@ import MafiaGameState from '../MafiaGameState';
 import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
 import { MafiaActionsName } from '../actions/AbstractActions';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
-import { MafiaRole } from '../../utils/MafiaRoleUtils';
-import { MafiaRoomMessage, MafiaRoomMessageType } from '../../MafiaRoom';
+import MafiaPlayer from '../clients/MafiaPlayer';
+import { AbstractActionResult } from '../results/actionResults';
+import { MafiaRoomMessage } from '../../MafiaRoom';
 
 class DayPhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
@@ -13,29 +14,21 @@ class DayPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
-        let playerToKill: string = '';
-        let playerToProtect: string = '';
-        this.context.phaseActionsResult.forEach(payload => {
-            switch (payload.actionName) {
-                case MafiaPhaseAction.MAFIA_KILL_VOTE:
-                    playerToKill = payload.playerId;
-                    break;
+        const playerToKill: AbstractActionResult = this.context.phaseActionsResult.get(MafiaPhaseAction.MAFIA_KILL_VOTE);
+        const playerToProtect: AbstractActionResult = this.context.phaseActionsResult.get(MafiaPhaseAction.DOCTOR_PROTECT_ONE);
 
-                case MafiaPhaseAction.DOCTOR_PROTECT_ONE:
-                    playerToProtect = payload.playerId;
-                    break;
+        if(playerToKill && playerToProtect) {
+            const killId = playerToKill.playerId;
+            const protectId = playerToProtect.playerId;
+            if(killId !== protectId && killId !== '') {
+                this.context.killOneById(playerToKill.playerId, MafiaRoomMessage.YOU_WERE_KILLED);
+            } else if(killId !== '') {
+                this.context.killOneById(playerToKill.playerId, MafiaRoomMessage.YOU_WERE_KILLED);
             }
-        });
-
-        if (playerToKill !== playerToProtect && playerToKill !== '') {
-            const killedPlayer = this.context.players.find(player => player.getId() === playerToKill);
-            const playerRole = killedPlayer.getRole();
-
-            // replace player role in roles collection to dead
-            this.context.replaceOneRoleInRolesCollection(playerRole, MafiaRole.DEAD);
-
-            killedPlayer.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.YOU_WERE_KILLED);
-            killedPlayer.setRole(MafiaRole.DEAD);
+        } else if(playerToKill) {
+            if(playerToKill.playerId !== '') {
+                this.context.killOneById(playerToKill.playerId, MafiaRoomMessage.YOU_WERE_KILLED);
+            }
         }
     }
 

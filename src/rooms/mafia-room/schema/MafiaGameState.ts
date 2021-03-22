@@ -1,9 +1,9 @@
-import { ArraySchema, Schema, type } from '@colyseus/schema';
+import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema';
 import { Client } from 'colyseus';
 import AbstractPhase from './phases/AbstractPhase';
 import MafiaRoleUtils, { MafiaRole } from '../utils/MafiaRoleUtils';
 import MafiaPlayer from './clients/MafiaPlayer';
-import { IActionName, MafiaRoomMessageType } from '../MafiaRoom';
+import { IActionName, MafiaRoomMessage, MafiaRoomMessageType } from '../MafiaRoom';
 import { RoomError, RoomErrorMessage } from '../errors/MafiaRoomErrors';
 import { MafiaRoomStateEnum } from './MafiaRoomState';
 import { MafiaPhaseName } from '../utils/MafiaPhaseUtils';
@@ -17,7 +17,7 @@ class MafiaGameState extends Schema {
     @type('string') public gameLeader: string;
     @type('boolean') public gameStarted: boolean;
     @type('boolean') public gameOver: boolean;
-    @type([AbstractActionResult]) public phaseActionsResult: ArraySchema<AbstractActionResult>;
+    @type({map: AbstractActionResult}) public phaseActionsResult: MapSchema<AbstractActionResult>;
 
     public rolesCollection: ArraySchema<MafiaRole>;
     public phaseTimeout: NodeJS.Timeout;
@@ -94,9 +94,23 @@ class MafiaGameState extends Schema {
         this.phase.onAction(client, payload.actionName, payload);
     }
 
+    public killOneById(playerId: string, message: MafiaRoomMessage): void {
+        const player = this.players.find(player => player.getId() === playerId);
+
+        if (player) {
+            this.replaceOneRoleInRolesCollection(player.getRole(), MafiaRole.DEAD);
+            player.send(MafiaRoomMessageType.MODERATOR, message);
+            player.setRole(MafiaRole.DEAD);
+            this.checkIsEndGame();
+        } else {
+            throw new RoomError(RoomErrorMessage.UNKNOWN_PLAYER);
+        }
+
+    }
+
     public replaceOneRoleInRolesCollection(roleToReplace: MafiaRole, newRole: MafiaRole): void {
         const indexOfRole = this.rolesCollection.indexOf(roleToReplace);
-        if(indexOfRole !== -1) {
+        if (indexOfRole !== -1) {
             this.rolesCollection.setAt(indexOfRole, newRole);
         } else {
             throw new RoomError(RoomErrorMessage.INVALID_REPLACE_UNAVAILABLE_ROLE);
@@ -106,7 +120,7 @@ class MafiaGameState extends Schema {
     public isEndGame(): boolean {
         const numberOfMafia = this.players.filter(player => MafiaRoleUtils.isMafia(player.getRole())).length;
         const numberOfVillagers = this.players.filter(player => MafiaRoleUtils.isVillager(player.getRole())).length;
-        return numberOfMafia >= numberOfVillagers;
+        return (numberOfMafia >= numberOfVillagers || !numberOfMafia) && this.isGameStarted();
     }
 
     public isGameStarted(): boolean {
@@ -153,13 +167,19 @@ class MafiaGameState extends Schema {
         }
     }
 
+    public checkIsEndGame(): void {
+        if(this.isEndGame()) {
+            this.endGame();
+        }
+    }
+
     public refreshMafiaGameState(): void {
         this.gameStarted = false;
         this.gameOver = false;
-        this.rolesCollection = new ArraySchema<MafiaRole>();
         this.gameLeader = MafiaRoomStateEnum.DEFAULT_GAME_LEADER;
+        this.rolesCollection = new ArraySchema<MafiaRole>();
+        this.phaseActionsResult = new MapSchema<AbstractActionResult>();
         this.phase = new DayPhase(this);
-        this.phaseActionsResult = new ArraySchema<AbstractActionResult>();
     }
 }
 

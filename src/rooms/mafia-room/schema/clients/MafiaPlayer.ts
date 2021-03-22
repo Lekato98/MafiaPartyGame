@@ -16,15 +16,11 @@ export class MafiaPlayer extends Schema {
     }
 
     public send(type: string | number, message?: any, options?: ISendOptions): void {
-        this.client.send(type, message);
+        this.client.send(type, message, options);
     }
 
     public getId(): string {
         return this.id;
-    }
-
-    public getUsername(): string {
-        return this.username;
     }
 
     public setRole(role: MafiaRole): void {

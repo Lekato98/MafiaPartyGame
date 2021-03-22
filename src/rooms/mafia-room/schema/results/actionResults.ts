@@ -37,7 +37,22 @@ export class VoteKickActionResult extends AbstractActionResult {
     }
 }
 
-export class DetectActionResult {
+export class DetectActionResult extends AbstractActionResult {
+    public readonly actionName: MafiaPhaseAction;
+
     constructor(public readonly playerId: string, public readonly role: MafiaRole) {
+        super();
+        this.actionName = MafiaPhaseAction.DETECTOR_DETECT_ONE;
+    }
+}
+
+export class ExecuteActionResult extends AbstractActionResult {
+    public readonly actionName: MafiaPhaseAction;
+    public playerId: string;
+
+    constructor() {
+        super();
+        this.actionName = MafiaPhaseAction.EXECUTE_PLAYER;
+        this.playerId = '';
     }
 }

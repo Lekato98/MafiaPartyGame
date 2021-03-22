@@ -5,7 +5,7 @@ import MafiaPlayer from '../clients/MafiaPlayer';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import { MafiaRoomMessageType } from '../../MafiaRoom';
 import MafiaRoleUtils from '../../utils/MafiaRoleUtils';
-import { IDetectPayload } from '../payloads/actionsPayload';
+import { IDetectPayload } from './payloads/actionsPayload';
 import { DetectActionResult } from '../results/actionResults';
 
 class DetectorActions extends AbstractActions {

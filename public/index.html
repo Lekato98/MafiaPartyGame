@@ -24,22 +24,27 @@
 
     function voteKillAction(event) {
         const voteKillPlayerId = window.prompt('sessionId: ');
-        room.send('ACTION', {actionName: 4, voteKillPlayerId});
+        room.send('ACTION', {actionName: 'KILL_VOTE', voteKillPlayerId});
     }
 
     function detectAction(event) {
         const detectPlayerId = window.prompt('sessionId: ');
-        room.send('ACTION', {actionName: 6, detectPlayerId});
+        room.send('ACTION', {actionName: 'DETECT_ONE', detectPlayerId});
     }
 
     function protectAction(event) {
         const protectPlayerId = window.prompt('sessionId: ');
-        room.send('ACTION', {actionName: 5, protectPlayerId});
+        room.send('ACTION', {actionName: 'PROTECT_ONE', protectPlayerId});
     }
 
     function voteAction(event) {
         const voteKickPlayerId = window.prompt('sessionId: ');
-        room.send('ACTION', {actionName: 0, playerId: voteKickPlayerId});
+        room.send('ACTION', {actionName: 'KICK_VOTE', playerId: voteKickPlayerId});
+    }
+
+    function executeAction(event) {
+        const executePlayerId = window.prompt('sessionId: ');
+        room.send('ACTION', {actionName: 'GUILTY_VOTE', playerId: executePlayerId});
     }
 
     async function createClient() {
@@ -89,6 +94,10 @@
 
             if (state.gameState.gameLeader === room.sessionId) {
                 setGameLeader();
+            }
+
+            if (state.gameState.gameOver) {
+                alert('Game is over');
             }
         });
 
@@ -143,6 +152,10 @@
 
             case 'VOTE':
                 actionBtn.onclick = voteAction;
+                break;
+
+            case 'DEFENSE':
+                actionBtn.onclick = executeAction;
                 break;
         }
     }

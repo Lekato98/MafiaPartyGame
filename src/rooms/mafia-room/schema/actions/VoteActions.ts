@@ -4,7 +4,7 @@ import { MafiaPhaseAction, MafiaPhasesActionLimit } from '../../utils/MafiaPhase
 import MafiaPlayer from '../clients/MafiaPlayer';
 import MafiaRoleUtils from '../../utils/MafiaRoleUtils';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
-import { IVoteActionPayload } from '../payloads/actionsPayload';
+import { IVoteActionPayload } from './payloads/actionsPayload';
 import { AbstractActionResult, VoteKickActionResult } from '../results/actionResults';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 

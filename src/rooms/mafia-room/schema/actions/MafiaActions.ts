@@ -5,7 +5,7 @@ import MafiaPlayer from '../clients/MafiaPlayer';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { AbstractActionResult, VoteKillActionResult } from '../results/actionResults';
-import { IKillVotePayload, IMessageToMafiaPayload } from '../payloads/actionsPayload';
+import { IKillVotePayload, IMessageToMafiaPayload } from './payloads/actionsPayload';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 
 class MafiaActions extends AbstractActions {

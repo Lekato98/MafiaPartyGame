@@ -4,7 +4,7 @@ import MafiaPlayer from '../clients/MafiaPlayer';
 import MafiaRoleUtils from '../../utils/MafiaRoleUtils';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import { IActionName } from '../../MafiaRoom';
-import { IMessageToAllPayload, IMessageToDeadAction } from '../payloads/actionsPayload';
+import { IMessageToAllPayload, IMessageToDeadAction } from './payloads/actionsPayload';
 import { AbstractActionResult } from '../results/actionResults';
 
 export enum MafiaActionsName {
@@ -22,10 +22,6 @@ abstract class AbstractActions extends Schema {
     players: ArraySchema<MafiaPlayer>;
 
     abstract onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: IActionName): void;
-
-    public setExtra<Type>(extra: Type): void {
-
-    }
 
     public messageToAllAction(player: MafiaPlayer, payload: IMessageToAllPayload) {
         this.players.forEach(player => player.send(MafiaPhaseAction.MESSAGE_TO_ALL, payload.message));

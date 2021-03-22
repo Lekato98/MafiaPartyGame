@@ -2,15 +2,16 @@ import { MafiaPhaseName } from './MafiaPhaseUtils';
 import { InvalidPhaseName, RoomErrorMessage } from '../errors/MafiaRoomErrors';
 
 export enum MafiaPhaseAction {
-    KICK_VOTE,
-    MESSAGE_TO_ALL,
-    MESSAGE_TO_MAFIA,
-    MESSAGE_TO_DEAD,
-    MAFIA_KILL_VOTE,
-    DOCTOR_PROTECT_ONE,
-    DETECTOR_DETECT_ONE,
-    INNOCENT_VOTE, // @TODO add new Defense Phase
-    GUILTY_VOTE
+    KICK_VOTE = 'KICK_VOTE',
+    MESSAGE_TO_ALL= 'MESSAGE_ALL',
+    MESSAGE_TO_MAFIA= 'MESSAGE_MAFIA',
+    MESSAGE_TO_DEAD= 'MESSAGE_DEAD',
+    MAFIA_KILL_VOTE= 'KILL_VOTE',
+    DOCTOR_PROTECT_ONE= 'PROTECT_ONE',
+    DETECTOR_DETECT_ONE= 'DETECT_ONE',
+    INNOCENT_VOTE= 'INNOCENT_VOTE',
+    GUILTY_VOTE= 'GUILTY_VOTE',
+    EXECUTE_PLAYER= 'EXECUTE_PLAYER',
 }
 
 // -1 for infinity
@@ -22,7 +23,7 @@ export enum MafiaPhasesActionLimit {
     MAFIA_KILL_VOTE = 1,
     DOCTOR_PROTECT_ONE = 1,
     DETECTOR_DETECT_ONE = 1,
-    JUDGE_VOTE = 1,
+    EXECUTE_VOTE = 1,
 }
 
 class MafiaPhaseActionUtils {

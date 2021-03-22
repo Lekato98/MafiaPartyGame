@@ -54,7 +54,7 @@ class MafiaRoomState extends Schema {
                     break;
 
                 case MafiaRoomStateEnum.SPECTATOR:
-                    this.spectators.push(new MafiaSpectator(client.sessionId, clientOptions.username));
+                    this.spectators.push(new MafiaSpectator(client, clientOptions.username));
                     this.numberOfSpectators++;
                     break;
             }
@@ -90,7 +90,6 @@ class MafiaRoomState extends Schema {
         }
 
     }
-
 
     public isFull(clientType: string): boolean {
         if (clientType === MafiaRoomStateEnum.PLAYER) {

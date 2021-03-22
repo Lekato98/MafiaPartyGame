@@ -2,22 +2,29 @@ import AbstractActions from './AbstractActions';
 import { ArraySchema } from '@colyseus/schema';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
-import { InvalidPhaseAction, RoomError, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
+import { IGuiltyActionPayload, IInnocentActionPayload } from './payloads/actionsPayload';
+import { AbstractActionResult, ExecuteActionResult } from '../results/actionResults';
 
 class DefenseActions extends AbstractActions {
     public playerToKick: string;
+    public votes: number;
 
     constructor(readonly player: ArraySchema<MafiaPlayer>) {
         super();
+        this.votes = 0;
+        this.playerToKick = '';
     }
 
     public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
         switch (action) {
             case MafiaPhaseAction.INNOCENT_VOTE:
-                break; // todo
+                this.innocentAction(player, payload);
+                break;
 
             case MafiaPhaseAction.GUILTY_VOTE:
-                break; // todo
+                this.guiltyAction(player, payload);
+                break;
 
             case MafiaPhaseAction.MESSAGE_TO_ALL:
                 this.messageToAllAction(player, payload);
@@ -32,12 +39,28 @@ class DefenseActions extends AbstractActions {
         }
     }
 
-    public setExtra<Type>(extra: Type) {
-        if(typeof extra === 'string') {
-            this.setPlayerToKick(extra);
-        } else {
-            throw new RoomError(RoomErrorMessage.INVALID_DATA_TYPE);
+    public guiltyAction(player: MafiaPlayer, payload: IGuiltyActionPayload): void {
+        this.votes++;
+    }
+
+    public innocentAction(player: MafiaPlayer, payload: IInnocentActionPayload): void {
+        this.votes--;
+    }
+
+    public getExecuteResult(): AbstractActionResult {
+        const executeResult = new ExecuteActionResult();
+        if(this.votes > 0) {
+            executeResult.playerId = this.playerToKick;
         }
+
+        return executeResult;
+    }
+
+    public getResult(): ArraySchema<AbstractActionResult> {
+        const result = new ArraySchema<AbstractActionResult>();
+        result.push(this.getExecuteResult());
+
+        return result;
     }
 
     public setPlayerToKick(playerToKick: string): void {

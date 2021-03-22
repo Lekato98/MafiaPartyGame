@@ -4,8 +4,8 @@ import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErro
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
-import { IDoctorProtectPayload } from '../payloads/actionsPayload';
-import { AbstractActionResult, ProtectActionResult, VoteKillActionResult } from '../results/actionResults';
+import { IDoctorProtectPayload } from './payloads/actionsPayload';
+import { AbstractActionResult, ProtectActionResult } from '../results/actionResults';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 
 class DoctorActions extends AbstractActions {

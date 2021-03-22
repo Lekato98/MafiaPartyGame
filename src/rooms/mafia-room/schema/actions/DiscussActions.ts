@@ -3,7 +3,6 @@ import AbstractActions from './AbstractActions';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
-import { IMessageToAllPayload } from '../payloads/actionsPayload';
 
 class DiscussActions extends AbstractActions {
     constructor(readonly players: ArraySchema<MafiaPlayer>) {

@@ -21,7 +21,7 @@ export enum MafiaPhaseTime { // time in seconds
     DAY_PHASE = 3,
     DISCUSS_PHASE = 3,
     VOTE_PHASE = 7,
-    DEFENSE_PHASE = 3,
+    DEFENSE_PHASE = 7,
 }
 
 abstract class MafiaPhaseUtils {

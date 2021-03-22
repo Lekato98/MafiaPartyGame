@@ -19,7 +19,7 @@ abstract class AbstractPhase extends Schema {
     @type('string') public actionsName: MafiaActionsName;
 
     @type(['string']) public activeRoles: ArraySchema<MafiaRole>;
-    @type(['uint8']) public activeActions: ArraySchema<MafiaPhaseAction>;
+    @type(['string']) public activeActions: ArraySchema<MafiaPhaseAction>;
     @type(AbstractActions) public actions: AbstractActions;
 
     abstract onBegin(): void;

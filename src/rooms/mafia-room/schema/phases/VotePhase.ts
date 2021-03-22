@@ -17,11 +17,9 @@ class VotePhase extends AbstractPhase {
 
     public onEnd(): void {
         const results: ArraySchema<AbstractActionResult> = this.actions.getResult();
-        this.context.phaseActionsResult.push(...results);
+        results.forEach(result => this.context.phaseActionsResult.set(result.actionName, result));
 
-        const playerToKick = this.context.phaseActionsResult.find(result =>
-            result.actionName === MafiaPhaseAction.KICK_VOTE,
-        );
+        const playerToKick: boolean = this.context.phaseActionsResult.has(MafiaPhaseAction.KICK_VOTE);
 
         if (playerToKick) {
             this.setNextPhase(this.getNextPhaseByOrder());
