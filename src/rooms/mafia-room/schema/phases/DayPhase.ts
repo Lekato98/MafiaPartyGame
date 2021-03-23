@@ -3,7 +3,6 @@ import MafiaGameState from '../MafiaGameState';
 import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
 import { MafiaActionsName } from '../actions/AbstractActions';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
-import MafiaPlayer from '../clients/MafiaPlayer';
 import { AbstractActionResult } from '../results/actionResults';
 import { MafiaRoomMessage } from '../../MafiaRoom';
 
@@ -14,8 +13,9 @@ class DayPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
-        const playerToKill: AbstractActionResult = this.context.phaseActionsResult.get(MafiaPhaseAction.MAFIA_KILL_VOTE);
-        const playerToProtect: AbstractActionResult = this.context.phaseActionsResult.get(MafiaPhaseAction.DOCTOR_PROTECT_ONE);
+        this.context.setCurrentActionByName(this.actionsName);
+        const playerToKill: AbstractActionResult = this.context.actionsResult.get(MafiaPhaseAction.MAFIA_KILL_VOTE);
+        const playerToProtect: AbstractActionResult = this.context.actionsResult.get(MafiaPhaseAction.DOCTOR_PROTECT_ONE);
 
         if(playerToKill && playerToProtect) {
             const killId = playerToKill.playerId;
@@ -33,7 +33,7 @@ class DayPhase extends AbstractPhase {
     }
 
     public onEnd(): void {
-        this.context.phaseActionsResult.clear();
+        this.context.actionsResult.clear();
     }
 
     refreshDayPhase(): void {

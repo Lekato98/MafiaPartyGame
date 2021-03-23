@@ -7,17 +7,18 @@ import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErro
 import { IVoteActionPayload } from './payloads/actionsPayload';
 import { AbstractActionResult, VoteKickActionResult } from '../results/actionResults';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
+import MafiaGameState from '../MafiaGameState';
 
 class VoteActions extends AbstractActions {
     public kickVoteActionLimit: MapSchema<number>;
     @type({map: 'uint8'}) public kickVotes: MapSchema<number>;
 
-    constructor(readonly players: ArraySchema<MafiaPlayer>) {
+    constructor(readonly context: MafiaGameState) {
         super();
         this.kickVoteActionLimit = new MapSchema<number>();
         this.kickVotes = new MapSchema<number>();
 
-        this.players.forEach((player: MafiaPlayer) =>
+        this.context.players.forEach((player: MafiaPlayer) =>
             MafiaRoleUtils.isAlivePlayer(player.getRole())
             && this.kickVoteActionLimit.set(player.getId(), 0)
             && this.kickVotes.set(player.getId(), 0)
@@ -68,7 +69,7 @@ class VoteActions extends AbstractActions {
         return voteResult;
     }
 
-    public getResult(): ArraySchema<AbstractActionResult> {
+    public getResults(): ArraySchema<AbstractActionResult> {
         const result = new ArraySchema<AbstractActionResult>();
         const voteResult = this.getVoteResult();
 

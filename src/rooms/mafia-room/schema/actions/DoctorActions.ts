@@ -7,18 +7,19 @@ import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { IDoctorProtectPayload } from './payloads/actionsPayload';
 import { AbstractActionResult, ProtectActionResult } from '../results/actionResults';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
+import MafiaGameState from '../MafiaGameState';
 
 class DoctorActions extends AbstractActions {
     private protectVoteActionLimit: MapSchema<number>;
     private protectVotes: MapSchema<number>;
     public protectedPlayer: string;
 
-    constructor(readonly players: ArraySchema<MafiaPlayer>) {
+    constructor(readonly context: MafiaGameState) {
         super();
         this.protectedPlayer = '';
         this.protectVotes = new MapSchema<number>();
         this.protectVoteActionLimit = new MapSchema<number>();
-        this.players.forEach((player: MafiaPlayer) =>
+        this.context.players.forEach((player: MafiaPlayer) =>
             player.getRole() === MafiaRole.MAFIA
             && this.protectVoteActionLimit.set(player.getId(), 0), // 0 initial value
         );
@@ -59,14 +60,14 @@ class DoctorActions extends AbstractActions {
         return sessionId === playerId;
     }
 
-    public getResult(): ArraySchema<AbstractActionResult> {
-        const result = new ArraySchema<AbstractActionResult>();
+    public getResults(): ArraySchema<AbstractActionResult> {
+        const results = new ArraySchema<AbstractActionResult>();
         if (this.protectedPlayer !== '') {
             const protectResult = this.getProtectResult();
-            result.push(protectResult);
+            results.push(protectResult);
         }
 
-        return result;
+        return results;
     }
 
     public getProtectResult(): AbstractActionResult {

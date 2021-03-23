@@ -10,6 +10,7 @@ class DiscussPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
+        this.context.setCurrentActionByName(this.actionsName);
     }
 
     public onEnd(): void {

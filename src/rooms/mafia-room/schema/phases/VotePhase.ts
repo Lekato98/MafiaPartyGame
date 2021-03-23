@@ -3,8 +3,6 @@ import MafiaGameState from '../MafiaGameState';
 import { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
 import { MafiaActionsName } from '../actions/AbstractActions';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
-import { ArraySchema } from '@colyseus/schema';
-import { AbstractActionResult } from '../results/actionResults';
 
 class VotePhase extends AbstractPhase {
     constructor(readonly context: MafiaGameState) {
@@ -13,13 +11,12 @@ class VotePhase extends AbstractPhase {
     }
 
     public onBegin(): void {
+        this.context.setCurrentActionByName(this.actionsName);
     }
 
     public onEnd(): void {
-        const results: ArraySchema<AbstractActionResult> = this.actions.getResult();
-        results.forEach(result => this.context.phaseActionsResult.set(result.actionName, result));
-
-        const playerToKick: boolean = this.context.phaseActionsResult.has(MafiaPhaseAction.KICK_VOTE);
+        this.context.action.transferResults();
+        const playerToKick: boolean = this.context.actionsResult.has(MafiaPhaseAction.KICK_VOTE);
 
         if (playerToKick) {
             this.setNextPhase(this.getNextPhaseByOrder());

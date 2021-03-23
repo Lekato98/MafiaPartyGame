@@ -1,4 +1,4 @@
-import { ArraySchema, MapSchema } from '@colyseus/schema';
+import { MapSchema } from '@colyseus/schema';
 import AbstractActions from './AbstractActions';
 import { MafiaPhaseAction, MafiaPhasesActionLimit } from '../../utils/MafiaPhaseActionUtils';
 import MafiaPlayer from '../clients/MafiaPlayer';
@@ -7,13 +7,14 @@ import { MafiaRoomMessageType } from '../../MafiaRoom';
 import MafiaRoleUtils from '../../utils/MafiaRoleUtils';
 import { IDetectPayload } from './payloads/actionsPayload';
 import { DetectActionResult } from '../results/actionResults';
+import MafiaGameState from '../MafiaGameState';
 
 class DetectorActions extends AbstractActions {
     public detectActionLimit: MapSchema<number>;
 
-    constructor(readonly players: ArraySchema<MafiaPlayer>) {
+    constructor(readonly context: MafiaGameState) {
         super();
-        this.players.forEach(player => MafiaRoleUtils.isDetector(player.getRole())
+        this.context.players.forEach(player => MafiaRoleUtils.isDetector(player.getRole())
             && this.detectActionLimit.set(player.getId(), 0));
     }
 
@@ -42,7 +43,7 @@ class DetectorActions extends AbstractActions {
         } else if (this.isDetectingHimself(player.getId(), payload.detectPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.DETECTOR_DETECT_HIMSELF);
         } else {
-            const detectedPlayer: MafiaPlayer = this.players.find(player =>
+            const detectedPlayer: MafiaPlayer = this.context.players.find(player =>
                 player.getId() === payload.detectPlayerId
             );
             const detectResult = new DetectActionResult(payload.detectPlayerId, detectedPlayer.getRole());

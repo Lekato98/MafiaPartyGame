@@ -14,6 +14,7 @@ class DetectorPhase extends AbstractPhase {
     }
 
     public onBegin(): void {
+        this.context.setCurrentActionByName(this.actionsName);
         this.context.players.forEach((player: MafiaPlayer) => player.getRole() === MafiaRole.DETECTOR
             && player.send(MafiaRoomMessageType.MODERATOR, MafiaRoomMessage.DETECTOR_TO_DETECT),
         );

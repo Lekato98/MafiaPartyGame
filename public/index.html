@@ -109,7 +109,7 @@
         const playersDiv = document.querySelector('#players');
         let box = '<hr />';
         state.players.forEach(player => {
-            box += `<div>${player.id} ${state.gameState.phase.name === 'VOTE' ? state.gameState.phase.actions.kickVotes.get(player.id) : ''}</div>`;
+            box += `<div>${player.id} ${state.gameState.phase.name === 'VOTE' ? state.gameState.action.kickVotes.get(player.id) : ''}</div>`;
         });
         box += '<hr />';
         playersDiv.innerHTML = box;

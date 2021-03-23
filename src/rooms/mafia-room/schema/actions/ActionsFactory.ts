@@ -9,30 +9,31 @@ import MafiaActions from './MafiaActions';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import ModeratorActions from './ModeratorActions';
 import DefenseActions from './DefenseActions';
+import MafiaGameState from '../MafiaGameState';
 
 abstract class ActionsFactory {
-    public static createActions(action: MafiaActionsName, players: ArraySchema<MafiaPlayer>) {
+    public static createActions(action: MafiaActionsName, context: MafiaGameState) {
         switch (action) {
             case MafiaActionsName.DETECTOR_ACTIONS:
-                return new DetectorActions(players);
+                return new DetectorActions(context);
 
             case MafiaActionsName.DISCUSS_ACTIONS:
-                return new DiscussActions(players);
+                return new DiscussActions(context);
 
             case MafiaActionsName.DOCTOR_ACTIONS:
-                return new DoctorActions(players);
+                return new DoctorActions(context);
 
             case MafiaActionsName.MAFIA_ACTIONS:
-                return new MafiaActions(players);
+                return new MafiaActions(context);
 
             case MafiaActionsName.VOTE_ACTIONS:
-                return new VoteActions(players);
+                return new VoteActions(context);
 
             case MafiaActionsName.DEFENSE_ACTIONS:
-                return new DefenseActions(players);
+                return new DefenseActions(context);
 
             case MafiaActionsName.MODERATOR_ACTIONS:
-                return new ModeratorActions(players);
+                return new ModeratorActions(context);
 
             default:
                 throw new InvalidPhaseAction(RoomErrorMessage.UNKNOWN_ACTION_NAME);

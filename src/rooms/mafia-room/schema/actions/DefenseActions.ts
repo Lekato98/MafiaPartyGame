@@ -5,15 +5,16 @@ import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
 import { IGuiltyActionPayload, IInnocentActionPayload } from './payloads/actionsPayload';
 import { AbstractActionResult, ExecuteActionResult } from '../results/actionResults';
+import MafiaGameState from '../MafiaGameState';
 
 class DefenseActions extends AbstractActions {
-    public playerToKick: string;
+    public readonly playerToKick: string;
     public votes: number;
 
-    constructor(readonly player: ArraySchema<MafiaPlayer>) {
+    constructor(readonly context: MafiaGameState) {
         super();
         this.votes = 0;
-        this.playerToKick = '';
+        this.playerToKick = this.context.actionsResult.get(MafiaPhaseAction.KICK_VOTE).playerId;
     }
 
     public onAction(player: MafiaPlayer, action: MafiaPhaseAction, payload: any): void {
@@ -56,15 +57,10 @@ class DefenseActions extends AbstractActions {
         return executeResult;
     }
 
-    public getResult(): ArraySchema<AbstractActionResult> {
-        const result = new ArraySchema<AbstractActionResult>();
-        result.push(this.getExecuteResult());
-
-        return result;
-    }
-
-    public setPlayerToKick(playerToKick: string): void {
-        this.playerToKick = playerToKick;
+    public getResults(): ArraySchema<AbstractActionResult> {
+        const results= new ArraySchema<AbstractActionResult>();
+        results.push(this.getExecuteResult());
+        return results;
     }
 }
 

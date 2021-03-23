@@ -5,7 +5,6 @@ import MafiaGameState from '../MafiaGameState';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import { AbstractActionResult } from '../results/actionResults';
 import { RoomError, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
-import DefenseActions from '../actions/DefenseActions';
 import { MafiaRoomMessage } from '../../MafiaRoom';
 
 class DefensePhase extends AbstractPhase {
@@ -15,21 +14,17 @@ class DefensePhase extends AbstractPhase {
     }
 
     public onBegin(): void {
-        const voteKickResult: AbstractActionResult = this.context.phaseActionsResult.get(MafiaPhaseAction.KICK_VOTE);
-
-        if (voteKickResult) {
-            // todo refactor avoid casting ...
-            (this.actions as DefenseActions).setPlayerToKick(voteKickResult.playerId);
-        } else {
+        this.context.setCurrentActionByName(this.actionsName);
+        const voteKickResult: AbstractActionResult = this.context.actionsResult.get(MafiaPhaseAction.KICK_VOTE);
+        if (!voteKickResult) {
             this.context.nextPhase();
             throw new RoomError(RoomErrorMessage.DEFENSE_PHASE_WITHOUT_PLAYER_TO_KICK);
         }
     }
 
     public onEnd(): void {
-        const results = this.actions.getResult();
-        results.forEach(result => this.context.phaseActionsResult.set(result.actionName, result));
-        const executePlayer = this.context.phaseActionsResult.get(MafiaPhaseAction.EXECUTE_PLAYER);
+        this.context.action.transferResults();
+        const executePlayer = this.context.actionsResult.get(MafiaPhaseAction.EXECUTE_PLAYER);
 
         if (executePlayer) {
             this.context.killOneById(executePlayer.playerId, MafiaRoomMessage.YOU_WERE_EXECUTED);

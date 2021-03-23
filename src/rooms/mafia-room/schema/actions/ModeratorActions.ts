@@ -1,10 +1,10 @@
-import { ArraySchema } from '@colyseus/schema';
 import AbstractActions from './AbstractActions';
 import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
 import MafiaPlayer from '../clients/MafiaPlayer';
+import MafiaGameState from '../MafiaGameState';
 
 class ModeratorActions extends AbstractActions {
-    constructor(readonly players: ArraySchema<MafiaPlayer>) {
+    constructor(readonly context: MafiaGameState) {
         super();
     }
 

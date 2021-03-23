@@ -14,12 +14,12 @@ export enum MafiaPhaseName {
 }
 
 export enum MafiaPhaseTime { // time in seconds
-    NIGHT_PHASE = 3,
-    MAFIA_PHASE = 3,
-    DETECTOR_PHASE = 3,
-    DOCTOR_PHASE = 3,
-    DAY_PHASE = 3,
-    DISCUSS_PHASE = 3,
+    NIGHT_PHASE = 1,
+    MAFIA_PHASE = 1,
+    DETECTOR_PHASE = 1,
+    DOCTOR_PHASE = 1,
+    DAY_PHASE = 1,
+    DISCUSS_PHASE = 1,
     VOTE_PHASE = 7,
     DEFENSE_PHASE = 7,
 }

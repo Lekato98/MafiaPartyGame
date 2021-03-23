@@ -7,16 +7,17 @@ import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { AbstractActionResult, VoteKillActionResult } from '../results/actionResults';
 import { IKillVotePayload, IMessageToMafiaPayload } from './payloads/actionsPayload';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
+import MafiaGameState from '../MafiaGameState';
 
 class MafiaActions extends AbstractActions {
     public killVoteActionLimit: MapSchema<number>;
     public killVotes: MapSchema<number>;
 
-    constructor(readonly players: ArraySchema<MafiaPlayer>) {
+    constructor(readonly context: MafiaGameState) {
         super();
         this.killVotes = new MapSchema<number>();
         this.killVoteActionLimit = new MapSchema<number>();
-        this.players.forEach((mafiaRolePlayer: MafiaPlayer) =>
+        this.context.players.forEach((mafiaRolePlayer: MafiaPlayer) =>
             mafiaRolePlayer.getRole() === MafiaRole.MAFIA
             && this.killVoteActionLimit.set(mafiaRolePlayer.getId(), 0), // 0 initial value
         );
@@ -43,7 +44,7 @@ class MafiaActions extends AbstractActions {
 
     public messageToMafia(player: MafiaPlayer, payload: IMessageToMafiaPayload): void {
         if (MafiaRoleUtils.isMafia(player.getRole())) {
-            this.players.forEach(player =>
+            this.context.players.forEach(player =>
                 player.getRole() === MafiaRole.MAFIA
                 && player.send(MafiaPhaseAction.MESSAGE_TO_MAFIA, payload.message),
             );
@@ -79,7 +80,7 @@ class MafiaActions extends AbstractActions {
         return this.killVoteActionLimit.get(sessionId) === MafiaPhasesActionLimit.MAFIA_KILL_VOTE;
     }
 
-    public getResult(): ArraySchema<AbstractActionResult> {
+    public getResults(): ArraySchema<AbstractActionResult> {
         const result = new ArraySchema<AbstractActionResult>();
         const voteKillResult = this.getVoteKillResult();
         result.push(voteKillResult);
@@ -95,7 +96,7 @@ class MafiaActions extends AbstractActions {
     }
 
     public isKillMafia(voteKillPlayerId: string): boolean {
-        const voteKillPlayerRole = this.players.find(player => player.getId() === voteKillPlayerId).getRole();
+        const voteKillPlayerRole = this.context.players.find(player => player.getId() === voteKillPlayerId).getRole();
         return MafiaRoleUtils.isMafia(voteKillPlayerRole);
     }
 }

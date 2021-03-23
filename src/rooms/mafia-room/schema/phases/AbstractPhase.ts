@@ -3,11 +3,7 @@ import { MafiaRole } from '../../utils/MafiaRoleUtils';
 import MafiaPhaseUtils, { MafiaPhaseName, MafiaPhaseTime } from '../../utils/MafiaPhaseUtils';
 import MafiaGameState from '../MafiaGameState';
 import MafiaPhaseActionUtils, { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
-import AbstractActions, { MafiaActionsName } from '../actions/AbstractActions';
-import { Client } from 'colyseus';
-import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
-import ActionsFactory from '../actions/ActionsFactory';
-import { IActionName } from '../../MafiaRoom';
+import { MafiaActionsName } from '../actions/AbstractActions';
 import ColyseusUtils from '../../../../colyseus/utils/ColyseusUtils';
 
 abstract class AbstractPhase extends Schema {
@@ -20,22 +16,9 @@ abstract class AbstractPhase extends Schema {
 
     @type(['string']) public activeRoles: ArraySchema<MafiaRole>;
     @type(['string']) public activeActions: ArraySchema<MafiaPhaseAction>;
-    @type(AbstractActions) public actions: AbstractActions;
 
     abstract onBegin(): void;
-
     abstract onEnd(): void;
-
-    public onAction(client: Client, action: MafiaPhaseAction, payload: IActionName): void {
-        const player = this.context.getPlayerById(client.sessionId);
-        if (!this.isValidAction(action)) {
-            throw new InvalidPhaseAction(RoomErrorMessage.UNKNOWN_ACTION_NAME);
-        } else if (!this.isValidRole(player.getRole())) {
-            throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
-        } else {
-            this.actions.onAction(player, action, payload);
-        }
-    }
 
     public moveToNextPhase(): void {
         this.context.setCurrentPhaseByName(this.nextPhase);
@@ -83,14 +66,9 @@ abstract class AbstractPhase extends Schema {
         );
     }
 
-    public initializeActions(): void {
-        this.actions = ActionsFactory.createActions(this.actionsName, this.context.players);
-    }
-
     public refreshPhase(): void {
         this.initializeActiveActions();
         this.initializeActiveRoles();
-        this.initializeActions();
         this.setNextPhase(this.getNextPhaseOptimal());
     }
 }
