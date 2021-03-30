@@ -71,7 +71,7 @@
         });
         room.onStateChange.once((state) => {
             console.log(`initial state: ${JSON.stringify(state, null, 2)}`);
-            if (state.gameState.gameLeader === room.sessionId) {
+            if (state.gameState.gameLeaderId === room.sessionId) {
                 setGameLeader();
             }
             setStateName(state);
@@ -92,7 +92,7 @@
                 setCurrentTime(state);
             }
 
-            if (state.gameState.gameLeader === room.sessionId) {
+            if (state.gameState.gameLeaderId === room.sessionId) {
                 setGameLeader();
             }
 

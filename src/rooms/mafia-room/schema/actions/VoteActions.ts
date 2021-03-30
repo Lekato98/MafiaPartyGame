@@ -55,8 +55,8 @@ class VoteActions extends AbstractActions {
         }
     }
 
-    public hasReachKickVoteLimits(sessionId: string): boolean {
-        return this.kickVoteActionLimit.get(sessionId) === MafiaPhasesActionLimit.KICK_VOTE;
+    public hasReachKickVoteLimits(playerId: string): boolean {
+        return this.kickVoteActionLimit.get(playerId) === MafiaPhasesActionLimit.KICK_VOTE;
     }
 
     public getVoteResult(): AbstractActionResult {

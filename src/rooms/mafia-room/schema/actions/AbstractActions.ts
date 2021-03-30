@@ -37,10 +37,11 @@ abstract class AbstractActions extends Schema {
         }
     }
 
-    public isPlayerExist(sessionId: string): boolean {
-        return this.context.players.findIndex(player => player.getId() === sessionId) !== -1;
+    public isPlayerExist(playerId: string): boolean {
+        return this.context.players.findIndex(player => player.getId() === playerId) !== -1;
     }
 
+    // returns the summary of needed actions that happens until you call it
     public getResults(): ArraySchema<AbstractActionResult> {
         return new ArraySchema<AbstractActionResult>();
     }

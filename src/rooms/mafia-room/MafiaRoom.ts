@@ -29,6 +29,29 @@ export interface IClientOptions {
     jointType: string, // PLAYER, SPECTATOR
 }
 
+export enum ClientJointType {
+    PLAYER = 'PLAYER',
+    SPECTATOR = 'SPECTATOR',
+}
+
+export function initializeMessages(room: Room) {
+    room.onMessage(MafiaRoomMessageType.ACTION, (client: Client, payload: IActionName) => {
+        try {
+            room.state.gameState.onAction(client, payload);
+        } catch (err) {
+            client.send(MafiaRoomMessageType.ERROR, err.message);
+        }
+    });
+
+    room.onMessage(MafiaRoomMessageType.START, (client: Client) => {
+        try {
+            room.state.gameState.startGame(client);
+        } catch (err) {
+            client.send(MafiaRoomMessageType.ERROR, err.message);
+        }
+    });
+}
+
 class MafiaRoom extends Room {
     public state: MafiaRoomState;
     private ROOM_NAME: string;
@@ -41,22 +64,8 @@ class MafiaRoom extends Room {
         // state
         this.setState(new MafiaRoomState());
 
-        // events
-        this.onMessage(MafiaRoomMessageType.ACTION, (client: Client, payload: IActionName) => {
-            try {
-                this.state.gameState.onAction(client, payload);
-            } catch (err) {
-                client.send(MafiaRoomMessageType.ERROR, err.message);
-            }
-        });
-
-        this.onMessage(MafiaRoomMessageType.START, (client: Client) => {
-            try {
-                this.state.gameState.startGame(client);
-            } catch (err) {
-                client.send(MafiaRoomMessageType.ERROR, err.message);
-            }
-        });
+        // events/messages
+        initializeMessages(this);
 
         LogsUtils.CREATED(this.ROOM_NAME);
     }

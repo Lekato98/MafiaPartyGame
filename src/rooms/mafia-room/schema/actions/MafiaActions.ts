@@ -54,17 +54,17 @@ class MafiaActions extends AbstractActions {
     }
 
     public killVoteAction(player: MafiaPlayer, payload: IKillVotePayload): void {
-        if (!MafiaRoleUtils.isMafia(player.getRole())) {
+        if (!MafiaRoleUtils.isMafia(player.getRole())) { // check if the player is mafia
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
-        } else if (this.hasReachKillVoteLimit(player.getId())) {
+        } else if (this.hasReachKillVoteLimit(player.getId())) { // check action limitation
             throw new InvalidPhaseAction(RoomErrorMessage.HAS_REACH_ACTION_LIMITS);
-        } else if (!this.isPlayerExist(payload.voteKillPlayerId)) {
+        } else if (!this.isPlayerExist(payload.voteKillPlayerId)) { // check if he do action in exist player
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
-        } else if (this.isKillMafia(payload.voteKillPlayerId)) {
-            throw new InvalidPhaseAction(RoomErrorMessage.MAFIA_KILL_MAFIA);
-        } else if (this.isKillHimself(player.getId(), payload.voteKillPlayerId)) {
+        } else if (this.isKillHimself(player.getId(), payload.voteKillPlayerId)) { // check if he is trying to kill himself
             throw new InvalidPhaseAction(RoomErrorMessage.MAFIA_KILL_HIMSELF);
-        } else {
+        } else if (this.isKillMafia(payload.voteKillPlayerId)) { // check if he is trying to kill teammate
+            throw new InvalidPhaseAction(RoomErrorMessage.MAFIA_KILL_MAFIA);
+        }  else {
             const preValue: number = this.killVotes.get(payload.voteKillPlayerId) || 0;
             this.killVotes.set(payload.voteKillPlayerId, preValue + 1);
             const prevKillVoteActionLimit = this.killVoteActionLimit.get(player.getId());
@@ -72,12 +72,12 @@ class MafiaActions extends AbstractActions {
         }
     }
 
-    public isKillHimself(sessionId: string, voteKillPlayerId: string): boolean {
-        return sessionId === voteKillPlayerId;
+    public isKillHimself(playerId: string, voteKillPlayerId: string): boolean {
+        return playerId === voteKillPlayerId;
     }
 
-    public hasReachKillVoteLimit(sessionId: string): boolean {
-        return this.killVoteActionLimit.get(sessionId) === MafiaPhasesActionLimit.MAFIA_KILL_VOTE;
+    public hasReachKillVoteLimit(playerId: string): boolean {
+        return this.killVoteActionLimit.get(playerId) === MafiaPhasesActionLimit.MAFIA_KILL_VOTE;
     }
 
     public getResults(): ArraySchema<AbstractActionResult> {

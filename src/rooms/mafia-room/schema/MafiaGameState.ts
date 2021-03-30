@@ -12,11 +12,10 @@ import { AbstractActionResult } from './results/actionResults';
 import ColyseusUtils from '../../../colyseus/utils/ColyseusUtils';
 import AbstractActions, { MafiaActionsName } from './actions/AbstractActions';
 import ActionsFactory from './actions/ActionsFactory';
-import { MafiaPhaseAction } from '../utils/MafiaPhaseActionUtils';
 
 class MafiaGameState extends Schema {
     @type(AbstractPhase) public phase: AbstractPhase;
-    @type('string') public gameLeader: string;
+    @type('string') public gameLeaderId: string;
     @type('boolean') public gameStarted: boolean;
     @type('boolean') public gameOver: boolean;
 
@@ -142,7 +141,7 @@ class MafiaGameState extends Schema {
     }
 
     public isGameLeader(client: Client): boolean {
-        return client.sessionId === this.gameLeader;
+        return client.sessionId === this.gameLeaderId;
     }
 
     public setCurrentPhaseByName(newPhaseName: MafiaPhaseName): void {
@@ -162,7 +161,7 @@ class MafiaGameState extends Schema {
     }
 
     public setGameLeader(gameLeader: string): void {
-        this.gameLeader = gameLeader;
+        this.gameLeaderId = gameLeader;
     }
 
     public setGameStarted(gameStarted: boolean): void {
@@ -194,7 +193,7 @@ class MafiaGameState extends Schema {
     public refreshMafiaGameState(): void {
         this.gameStarted = false;
         this.gameOver = false;
-        this.gameLeader = MafiaRoomStateEnum.DEFAULT_GAME_LEADER;
+        this.gameLeaderId = MafiaRoomStateEnum.DEFAULT_GAME_LEADER;
         this.rolesCollection = new ArraySchema<MafiaRole>();
         this.actionsResult = new MapSchema<AbstractActionResult>();
         this.action = ActionsFactory.createActions(MafiaActionsName.MODERATOR_ACTIONS, this);

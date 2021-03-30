@@ -51,12 +51,12 @@ class DetectorActions extends AbstractActions {
         }
     }
 
-    public isDetectingHimself(sessionId: string, detectedSessionId: string): boolean {
-        return sessionId === detectedSessionId;
+    public isDetectingHimself(playerId: string, detectedPlayerId: string): boolean {
+        return playerId === detectedPlayerId;
     }
 
-    public hasReachDetectActionLimit(sessionId: string): boolean {
-        return this.detectActionLimit.get(sessionId) === MafiaPhasesActionLimit.DETECTOR_DETECT_ONE;
+    public hasReachDetectActionLimit(playerId: string): boolean {
+        return this.detectActionLimit.get(playerId) === MafiaPhasesActionLimit.DETECTOR_DETECT_ONE;
     }
 }
 

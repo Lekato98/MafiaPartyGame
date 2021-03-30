@@ -26,7 +26,7 @@ class DefensePhase extends AbstractPhase {
         this.context.action.transferResults();
         const executePlayer = this.context.actionsResult.get(MafiaPhaseAction.EXECUTE_PLAYER);
 
-        if (executePlayer) {
+        if (executePlayer && executePlayer.playerId !== '') {
             this.context.killOneById(executePlayer.playerId, MafiaRoomMessage.YOU_WERE_EXECUTED);
         }
     }

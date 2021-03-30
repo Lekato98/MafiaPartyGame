@@ -1,7 +1,7 @@
 import { ArraySchema, MapSchema } from '@colyseus/schema';
 import AbstractActions from './AbstractActions';
 import { InvalidPhaseAction, RoomErrorMessage } from '../../errors/MafiaRoomErrors';
-import { MafiaPhaseAction } from '../../utils/MafiaPhaseActionUtils';
+import { MafiaPhaseAction, MafiaPhasesActionLimit } from '../../utils/MafiaPhaseActionUtils';
 import MafiaPlayer from '../clients/MafiaPlayer';
 import MafiaRoleUtils, { MafiaRole } from '../../utils/MafiaRoleUtils';
 import { IDoctorProtectPayload } from './payloads/actionsPayload';
@@ -43,6 +43,8 @@ class DoctorActions extends AbstractActions {
     public protectAction(player: MafiaPlayer, payload: IDoctorProtectPayload): void {
         if (!MafiaRoleUtils.isDoctor(player.getRole())) {
             throw new InvalidPhaseAction(RoomErrorMessage.INVALID_ROLE_ACTION_CALL);
+        } else if(this.hasReachProtectActionLimit(player.getId())) {
+            throw new InvalidPhaseAction(RoomErrorMessage.HAS_REACH_ACTION_LIMITS);
         } else if (!this.isPlayerExist(payload.protectPlayerId)) {
             throw new InvalidPhaseAction(RoomErrorMessage.ACTION_ON_UNKNOWN_PLAYER);
         } else if (this.isDoctorProtectingHimself(player.getId(), payload.protectPlayerId)) {
@@ -56,8 +58,12 @@ class DoctorActions extends AbstractActions {
         this.protectedPlayer = protectedPlayer;
     }
 
-    public isDoctorProtectingHimself(sessionId: string, playerId: string): boolean {
-        return sessionId === playerId;
+    public hasReachProtectActionLimit(playerId: string) {
+        return this.protectVoteActionLimit.get(playerId) === MafiaPhasesActionLimit.DOCTOR_PROTECT_ONE;
+    }
+
+    public isDoctorProtectingHimself(playerId: string, protectPlayerId: string): boolean {
+        return playerId === protectPlayerId;
     }
 
     public getResults(): ArraySchema<AbstractActionResult> {
